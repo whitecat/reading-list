@@ -26,6 +26,7 @@ This is a from-scratch rewrite of the original extension — Manifest V3, TypeSc
 **New in this version:**
 
 - Compressed, bucketed storage — holds several hundred+ items instead of the original's hard ~511-item limit, with no per-item key cap
+- Choose where the list is stored (Options → Storage): browser sync, this device only, and/or your own server, with one primary and the rest kept as backups
 - Storage Diagnostics (Options → Advanced) to check real usage against the browser's sync quota
 
 **Not carried over:** the original's Firefox-only address-bar toggle icon (`page_action`). Chrome removed that API entirely in Manifest V3, and Firefox has long signaled intent to fold it into the unified `action` API without having done so — not worth building against something already headed for deprecation.
@@ -78,3 +79,43 @@ Firefox removes temporary add-ons when you close the browser, and doesn’t auto
 1. When you want to read a page you saved, open up the extension and click the reading item you want to read
    - `Control + click` or `command ⌘/windows key ⊞ + click` to open the page in a new tab
 1. Done with a page? Click the `×` next to said page in your reading list, and it will magically vanish.
+
+## Storage options
+
+Options → Storage lists three places the reading list can be saved. Tick any combination of them and pick one as the **primary**:
+
+- **Browser sync**: `chrome.storage.sync` / `browser.storage.sync`, synced to your Google or Mozilla account. Limited to roughly 300 items by the browser's sync quota.
+- **This device only**: `chrome.storage.local`. Not synced; holds far more (about 10MB).
+- **My own server**: an HTTP API you host (below).
+
+The list is read from the primary, and every change is written to the primary first and then copied to each other ticked option as a backup. A failed backup write doesn't block the change; it's shown on the Options page and in Storage Diagnostics, and **Copy List to Backups Now** overwrites every backup with the primary's list.
+
+Saving a new selection never deletes anything. The current list is merged (by URL) with whatever the newly selected options already hold, and that merged list is written to each of them. An option you untick keeps its data; it just stops being read or written.
+
+The storage selection is kept per browser profile in `chrome.storage.local`, so each device chooses independently.
+
+### Your own server API
+
+Enter the base URL (for example `https://example.com/reading-list`) and an optional access token. When you save, the browser asks for permission to reach that site. The extension calls these endpoints, relative to the base URL:
+
+| Method | Path | Body | Expected response |
+| --- | --- | --- | --- |
+| `GET` | `/items` | — | `200` with a JSON array of items |
+| `POST` | `/items` | JSON array of items | any `2xx`; add each item, or replace the existing item with the same `url` |
+| `POST` | `/items/delete` | `{ "urls": ["https://..."] }` | any `2xx`; remove items with those URLs |
+| `PUT` | `/items` | JSON array of items | any `2xx`; replace the whole list (an empty array clears it) |
+
+An item looks like this (`favIconUrl`, `viewed` and `index` are optional):
+
+```json
+{
+  "url": "https://example.com/article",
+  "title": "An article",
+  "addedAt": 1767225600000,
+  "favIconUrl": "https://example.com/favicon.ico",
+  "viewed": false,
+  "index": -3
+}
+```
+
+Items are identified by `url`. Store every field you receive and return it unchanged. If a token is set, every request carries `Authorization: Bearer <token>`. Any non-`2xx` response, or no response within 15 seconds, counts as a failed write.

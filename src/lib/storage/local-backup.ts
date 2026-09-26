@@ -89,3 +89,29 @@ export const getConversionLog = () =>
 export async function saveConversionLog(log: ConversionLog): Promise<void> {
   await chrome.storage.local.set({ [CONVERSION_LOG_KEY]: log });
 }
+
+const BACKUP_WRITE_ERROR_KEY = 'lastBackupWriteError';
+
+export interface BackupWriteError {
+  backend: string;
+  message: string;
+  occurredAt: number;
+}
+
+export const getBackupWriteError = () =>
+  readLocal<BackupWriteError>(BACKUP_WRITE_ERROR_KEY);
+
+export async function saveBackupWriteError(
+  backend: string,
+  err: unknown,
+): Promise<void> {
+  const stored: BackupWriteError = {
+    backend,
+    message: err instanceof Error ? `${err.name}: ${err.message}` : String(err),
+    occurredAt: Date.now(),
+  };
+  await chrome.storage.local.set({ [BACKUP_WRITE_ERROR_KEY]: stored });
+}
+
+export const clearBackupWriteError = () =>
+  chrome.storage.local.remove(BACKUP_WRITE_ERROR_KEY);

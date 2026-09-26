@@ -19,6 +19,7 @@
     "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" }
   },
   "permissions": ["tabs", "storage", "contextMenus"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"],

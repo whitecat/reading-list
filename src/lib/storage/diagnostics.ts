@@ -3,10 +3,13 @@ import {
   bucketStore,
   startingBucketCount,
 } from './bucket-store.js';
+import { LOCAL_ITEMS_KEY } from './backends.js';
+import { backupIds, getStorageConfig } from './config.js';
 import { flatStore } from './flat-store.js';
 import { OTHER_STORE, PREFERRED_STORE } from './load.js';
 import {
   ConversionLog,
+  getBackupWriteError,
   getConversionLog,
   getLoadError,
   getLocalBackup,
@@ -132,6 +135,22 @@ function describeConversion(
   ];
 }
 
+async function describeBackends(): Promise<string[]> {
+  const config = await getStorageConfig();
+  const backupError = await getBackupWriteError();
+  const localItems = (await chrome.storage.local.get(LOCAL_ITEMS_KEY))[
+    LOCAL_ITEMS_KEY
+  ];
+  return [
+    `Primary storage: ${config.primary}; backups: ${listOrNone(backupIds(config))}; ` +
+      `API URL set: ${config.apiUrl.trim() ? 'yes' : 'no'}, token set: ${config.apiToken ? 'yes' : 'no'}`,
+    `Device-only items: ${Array.isArray(localItems) ? localItems.length : 'none stored'}`,
+    backupError
+      ? `Last backup write error: ${backupError.backend}: ${backupError.message} (at ${iso(backupError.occurredAt)})`
+      : 'Last backup write error: none',
+  ];
+}
+
 async function describeEnvironment(data: SyncData): Promise<string[]> {
   const localKeys = Object.keys(await chrome.storage.local.get(null));
   return [
@@ -215,6 +234,7 @@ export async function getStorageDiagnostics(): Promise<string> {
   ];
   return [
     `Build: ${chrome.runtime.getManifest().version}`,
+    ...(await describeBackends()),
     describeFormat(data, log),
     ...(await describeSync(data)),
     ...describeConversion(

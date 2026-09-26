@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit';
 import { query, state } from 'lit/decorators.js';
-import { rl } from '../lib/rl.js';
+import { BackendFailure, rl } from '../lib/rl.js';
 import {
   getSettings,
   updateSettings,
@@ -9,7 +9,18 @@ import {
 import { message } from '../lib/browser.js';
 import { getStorageDiagnostics } from '../lib/storage/diagnostics.js';
 import { readItemsWithoutWriting } from '../lib/storage/load.js';
-import { getLocalBackup } from '../lib/storage/local-backup.js';
+import {
+  BackupWriteError,
+  getBackupWriteError,
+  getLocalBackup,
+} from '../lib/storage/local-backup.js';
+import { apiItemsUrl } from '../lib/storage/backends.js';
+import {
+  BACKEND_IDS,
+  BackendId,
+  getStorageConfig,
+  StorageConfig,
+} from '../lib/storage/config.js';
 import { flatStore } from '../lib/storage/flat-store.js';
 import { ListItemData } from '../lib/storage/store.js';
 import { styles } from '../styles/options.styles.js';
@@ -27,6 +38,26 @@ const CHECKBOX_SETTINGS: { key: CheckboxSettingKey; label: string }[] = [
   },
 ];
 
+const BACKEND_LABELS: Record<BackendId, { label: string; detail: string }> = {
+  sync: {
+    label: 'Browser sync',
+    detail: 'Synced to your browser account. Limited to roughly 300 items.',
+  },
+  local: {
+    label: 'This device only',
+    detail: 'Kept in this browser on this computer. Not synced.',
+  },
+  api: {
+    label: 'My own server',
+    detail: 'Read and written through an API you host (see the README).',
+  },
+};
+
+const describeFailures = (failures: BackendFailure[]) =>
+  failures
+    .map(({ backend, error }) => `${BACKEND_LABELS[backend].label}: ${error}`)
+    .join('\n');
+
 export class ReadingListOptions extends LitElement {
   static override styles = [theme, reset, styles];
 
@@ -36,6 +67,10 @@ export class ReadingListOptions extends LitElement {
     addContextMenu: true,
   };
 
+  @state() private _storage: StorageConfig | null = null;
+  @state() private _storageStatus = '';
+  @state() private _storageBusy = false;
+  @state() private _backupError: BackupWriteError | null = null;
   @state() private _diagnostics = '';
   @state() private _diagnosticsCopied = false;
   @query('#importInput') private _importInput?: HTMLInputElement;
@@ -45,6 +80,7 @@ export class ReadingListOptions extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     void this._loadSettings();
+    void this._loadStorage();
     this._unsubscribeSettings?.();
     this._unsubscribeSettings = onSettingsChanged((settings) => {
       this.settings = {
@@ -81,6 +117,8 @@ export class ReadingListOptions extends LitElement {
           `,
         )}
       </div>
+
+      ${this._renderStorage()}
 
       <div class="section">
         <h3>Backup & Restore</h3>
@@ -128,6 +166,201 @@ export class ReadingListOptions extends LitElement {
     `;
   }
 
+  private _renderStorage() {
+    const config = this._storage;
+    if (!config) return '';
+    const hasBackups = BACKEND_IDS.some(
+      (id) => id !== config.primary && config.enabled[id],
+    );
+    return html`
+      <div class="section">
+        <h3>Storage</h3>
+        <p class="hint">
+          Tick every place the list should be saved, and pick which one is the
+          primary. The list is read from the primary; every change is also
+          copied to the others as backups.
+        </p>
+        <table class="storage">
+          <thead>
+            <tr>
+              <th>Use</th>
+              <th>Primary</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${BACKEND_IDS.map(
+              (id) => html`
+                <tr>
+                  <td>
+                    <input
+                      type="checkbox"
+                      id="use-${id}"
+                      .checked=${config.enabled[id]}
+                      ?disabled=${id === config.primary}
+                      @change=${(e: Event) =>
+                        this._editStorage({
+                          enabled: {
+                            ...config.enabled,
+                            [id]: (e.target as HTMLInputElement).checked,
+                          },
+                        })}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="radio"
+                      name="primary"
+                      .checked=${config.primary === id}
+                      @change=${() =>
+                        this._editStorage({
+                          primary: id,
+                          enabled: { ...config.enabled, [id]: true },
+                        })}
+                    />
+                  </td>
+                  <td>
+                    <label for="use-${id}">${BACKEND_LABELS[id].label}</label>
+                    <div class="hint">${BACKEND_LABELS[id].detail}</div>
+                  </td>
+                </tr>
+              `,
+            )}
+          </tbody>
+        </table>
+        ${
+          config.enabled.api
+            ? html`
+                <div class="api-fields">
+                  <label>
+                    Server URL
+                    <input
+                      type="url"
+                      placeholder="https://example.com/reading-list"
+                      .value=${config.apiUrl}
+                      @input=${(e: Event) =>
+                        this._editStorage({
+                          apiUrl: (e.target as HTMLInputElement).value,
+                        })}
+                    />
+                  </label>
+                  <label>
+                    Access token (optional)
+                    <input
+                      type="password"
+                      autocomplete="off"
+                      .value=${config.apiToken}
+                      @input=${(e: Event) =>
+                        this._editStorage({
+                          apiToken: (e.target as HTMLInputElement).value,
+                        })}
+                    />
+                  </label>
+                </div>
+              `
+            : ''
+        }
+        <div>
+          <button
+            ?disabled=${this._storageBusy}
+            @click=${this._onSaveStorageClick}
+          >
+            Save Storage Settings
+          </button>
+          ${
+            hasBackups
+              ? html`<button
+                  ?disabled=${this._storageBusy}
+                  @click=${this._onCopyToBackupsClick}
+                >
+                  Copy List to Backups Now
+                </button>`
+              : ''
+          }
+        </div>
+        ${
+          this._storageStatus
+            ? html`<p class="status">${this._storageStatus}</p>`
+            : ''
+        }
+        ${
+          this._backupError
+            ? html`<p class="status">
+                Last backup write failed
+                (${
+                  BACKEND_LABELS[this._backupError.backend as BackendId]
+                    ?.label ?? this._backupError.backend
+                },
+                ${new Date(this._backupError.occurredAt).toLocaleString()}):
+                ${this._backupError.message}
+              </p>`
+            : ''
+        }
+      </div>
+    `;
+  }
+
+  private _editStorage(changes: Partial<StorageConfig>) {
+    this._storage = { ...this._storage!, ...changes };
+    this._storageStatus = '';
+  }
+
+  private async _loadStorage() {
+    this._storage = await getStorageConfig();
+    this._backupError = await getBackupWriteError();
+  }
+
+  private async _onSaveStorageClick() {
+    const config = this._storage!;
+    // permissions.request must run first, while the click still counts as a
+    // user gesture.
+    const granted = config.enabled.api
+      ? this._requestApiPermission(config.apiUrl)
+      : Promise.resolve(true);
+    this._storageBusy = true;
+    this._storageStatus = 'Saving...';
+    try {
+      if (!(await granted)) {
+        throw new Error('Permission to reach the server was not granted');
+      }
+      const failures = await rl.changeStorage(config);
+      this._storageStatus = failures.length
+        ? `Saved, but some backups couldn't be written:\n${describeFailures(failures)}`
+        : 'Saved.';
+    } catch (err) {
+      this._storageStatus = `Not saved: ${err}`;
+    } finally {
+      this._storageBusy = false;
+      await this._loadStorage();
+    }
+  }
+
+  private _requestApiPermission(apiUrl: string): Promise<boolean> {
+    let origin: string;
+    try {
+      origin = new URL(apiItemsUrl(apiUrl)).origin;
+    } catch {
+      return Promise.reject(new Error('The server URL is not a valid URL'));
+    }
+    return chrome.permissions.request({ origins: [`${origin}/*`] });
+  }
+
+  private async _onCopyToBackupsClick() {
+    this._storageBusy = true;
+    this._storageStatus = 'Copying...';
+    try {
+      const failures = await rl.copyToBackups();
+      this._storageStatus = failures.length
+        ? `Some backups couldn't be written:\n${describeFailures(failures)}`
+        : 'Every backup now matches the primary.';
+    } catch (err) {
+      this._storageStatus = `Copy failed: ${err}`;
+    } finally {
+      this._storageBusy = false;
+      this._backupError = await getBackupWriteError();
+    }
+  }
+
   private async _loadSettings() {
     const settings = await getSettings();
     this.settings = {
@@ -152,7 +385,11 @@ export class ReadingListOptions extends LitElement {
         ),
       )
     ) {
-      await rl.clearAll();
+      try {
+        await rl.clearAll();
+      } catch (err) {
+        alert('Failed to clear: ' + err);
+      }
     }
   }
 
@@ -220,7 +457,12 @@ export class ReadingListOptions extends LitElement {
   }
 
   async exportList() {
-    downloadJson('reading-list.json', await readItemsWithoutWriting());
+    const config = await getStorageConfig();
+    const items =
+      config.primary === 'sync'
+        ? await readItemsWithoutWriting()
+        : await rl.getListItems();
+    downloadJson('reading-list.json', items);
   }
 }
 
