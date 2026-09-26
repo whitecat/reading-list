@@ -3,7 +3,7 @@ import {
   bucketStore,
   startingBucketCount,
 } from './bucket-store.js';
-import { LOCAL_ITEMS_KEY } from './backends.js';
+import { LOCAL_ITEMS_KEY } from './local-backend.js';
 import { backupIds, getStorageConfig } from './config.js';
 import { flatStore } from './flat-store.js';
 import { OTHER_STORE, PREFERRED_STORE } from './load.js';

@@ -14,7 +14,7 @@ import {
   getBackupWriteError,
   getLocalBackup,
 } from '../lib/storage/local-backup.js';
-import { apiItemsUrl } from '../lib/storage/backends.js';
+import { apiItemsUrl } from '../lib/storage/api-backend.js';
 import {
   BACKEND_IDS,
   BackendId,

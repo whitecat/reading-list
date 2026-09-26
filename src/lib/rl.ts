@@ -1,9 +1,9 @@
+import { Backend } from './storage/backend.js';
 import {
-  Backend,
   backendFor,
   StorageTargets,
   storageTargets,
-} from './storage/backends.js';
+} from './storage/storage-targets.js';
 import {
   BACKEND_IDS,
   BackendId,
