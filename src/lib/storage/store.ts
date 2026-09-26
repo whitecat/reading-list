@@ -46,9 +46,37 @@ export function syncBytes(key: string, value: unknown): number {
   return utf8ByteLength(key) + utf8ByteLength(JSON.stringify(value));
 }
 
+// Which messages count: see AGENTS.md "Telling the user storage is full".
+export function isOutOfSpace(err: unknown): boolean {
+  if (err instanceof StorageFullError) return true;
+  const text =
+    err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+  return /quota/i.test(text) && !/MAX_WRITE_OPERATIONS/i.test(text);
+}
+
 export async function writeSync({ set, remove }: SyncWrite): Promise<void> {
-  if (Object.keys(set).length > 0) await chrome.storage.sync.set(set);
+  try {
+    if (Object.keys(set).length > 0) await chrome.storage.sync.set(set);
+  } catch (err) {
+    if (!isOutOfSpace(err) || err instanceof StorageFullError) throw err;
+    throw new StorageFullError(
+      err instanceof Error ? `${err.name}: ${err.message}` : String(err),
+    );
+  }
   if (remove.length > 0) await chrome.storage.sync.remove(remove);
+}
+
+export interface SyncUsage {
+  bytes: number;
+  quota: number;
+}
+
+export async function syncUsage(): Promise<SyncUsage> {
+  const serialized = utf8ByteLength(
+    JSON.stringify(await chrome.storage.sync.get(null)),
+  );
+  const reported = await chrome.storage.sync.getBytesInUse(null).catch(() => 0);
+  return { bytes: Math.max(serialized, reported), quota: syncQuotaBytes() };
 }
 
 export function mergeByUrl(

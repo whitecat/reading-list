@@ -3,7 +3,11 @@ import { repeat } from 'lit/directives/repeat.js';
 import { animate } from '@lit-labs/motion';
 import { customElement, state } from 'lit/decorators.js';
 import { rl } from '../lib/rl.js';
-import { ListItemData } from '../lib/storage/store.js';
+import {
+  getStorageFullNotice,
+  STORAGE_FULL_KEY,
+} from '../lib/storage/local-backup.js';
+import { isOutOfSpace, ListItemData, syncUsage } from '../lib/storage/store.js';
 import {
   getSettings,
   onSettingsChanged,
@@ -50,6 +54,8 @@ const DRAG_TIMING: KeyframeAnimationOptions = { duration: 180, easing: 'ease' };
 const REVEAL_ITEM_LIMIT = 10;
 const REVEAL_FIRST_DELAY_MS = 150;
 const SYNC_ERROR_VISIBLE_MS = 4000;
+const STORAGE_WARNING_PERCENT = 90;
+const FAILED_TITLE_MAX_LENGTH = 60;
 
 const REVIEW_AFTER_ITEM_COUNT = 6;
 const REVIEW_URL = isFirefox
@@ -78,10 +84,21 @@ export class ReadingListAppElement extends LitElement {
   @state() private _animateItems = true;
   @state() private _syncError = false;
   @state() private _loadError = false;
+  @state() private _storageFullTitle: string | null = null;
+  @state() private _changeFailedForSpace = false;
+  @state() private _storagePercent = 0;
 
   private _syncErrorTimer?: ReturnType<typeof setTimeout>;
   private _unsubscribeList?: () => void;
   private _unsubscribeSettings?: () => void;
+
+  private _onLocalStorageChanged = (
+    changes: Record<string, chrome.storage.StorageChange>,
+    areaName: string,
+  ) => {
+    if (areaName === 'local' && STORAGE_FULL_KEY in changes)
+      void this._refreshStorageStatus();
+  };
 
   constructor() {
     super();
@@ -105,6 +122,7 @@ export class ReadingListAppElement extends LitElement {
         };
       }
       if (this._animateItems) this._staggerReveal(this._filteredItems());
+      await this._refreshStorageStatus();
     } catch (err) {
       console.error('Failed to load reading list', err);
       this._loadError = true;
@@ -117,7 +135,9 @@ export class ReadingListAppElement extends LitElement {
     this._unsubscribeList?.();
     this._unsubscribeList = rl.subscribe(async () => {
       this._listItems = await rl.getListItems();
+      await this._refreshStorageStatus();
     });
+    chrome.storage.onChanged.addListener(this._onLocalStorageChanged);
     this._unsubscribeSettings?.();
     this._unsubscribeSettings = onSettingsChanged((settings) =>
       this._applySettings(settings),
@@ -132,6 +152,7 @@ export class ReadingListAppElement extends LitElement {
     this._unsubscribeSettings = undefined;
     this._draggedUrl = null;
     clearTimeout(this._syncErrorTimer);
+    chrome.storage.onChanged.removeListener(this._onLocalStorageChanged);
   }
 
   private _applySettings(settings: Required<Settings>) {
@@ -153,11 +174,30 @@ export class ReadingListAppElement extends LitElement {
   private async _saveChange(change: () => Promise<unknown>) {
     try {
       await change();
+      this._changeFailedForSpace = false;
     } catch (err) {
       console.error(err);
-      this._showSyncError();
+      if (isOutOfSpace(err)) this._changeFailedForSpace = true;
+      else this._showSyncError();
     }
     this._listItems = await rl.getListItems();
+    await this._refreshStorageStatus();
+  }
+
+  private async _refreshStorageStatus() {
+    try {
+      const [notice, usage] = await Promise.all([
+        getStorageFullNotice(),
+        syncUsage(),
+      ]);
+      this._storageFullTitle = notice?.title ?? null;
+      this._storagePercent = Math.min(
+        100,
+        Math.round((usage.bytes / usage.quota) * 100),
+      );
+    } catch (err) {
+      console.error('Failed to read storage usage', err);
+    }
   }
 
   private get _canReorder(): boolean {
@@ -219,6 +259,7 @@ export class ReadingListAppElement extends LitElement {
   override render() {
     return html`
       ${this._renderHeader()} ${this._renderSearch()} ${this._renderControls()}
+      ${this._renderStorageStatus()}
       ${
         this._syncError
           ? this._renderError(
@@ -242,6 +283,40 @@ export class ReadingListAppElement extends LitElement {
       ${this._renderList()}
       ${this._editingUrl !== null ? html`<div class="editing-overlay"></div>` : ''}
     `;
+  }
+
+  private _renderStorageStatus() {
+    if (this._storageFullTitle !== null) {
+      const title =
+        this._storageFullTitle.length > FAILED_TITLE_MAX_LENGTH
+          ? `${this._storageFullTitle.slice(0, FAILED_TITLE_MAX_LENGTH - 1)}…`
+          : this._storageFullTitle;
+      return this._renderError(
+        message(
+          'storageFullPage',
+          'Your reading list is full, so "$1" wasn\'t saved. Your browser only allows a limited amount of synced storage - delete pages you\'ve already read to make room, then add it again.',
+          title,
+        ),
+      );
+    }
+    if (this._changeFailedForSpace) {
+      return this._renderError(
+        message(
+          'storageFull',
+          "Your reading list is full, so that change wasn't saved. Delete pages you've already read to make room.",
+        ),
+      );
+    }
+    if (this._storagePercent >= STORAGE_WARNING_PERCENT) {
+      return html`<p class="storage-warning" role="status" aria-live="polite">
+        ${message(
+          'storageAlmostFull',
+          "Your reading list is $1% full. Delete pages you've already read to keep room for new ones.",
+          String(this._storagePercent),
+        )}
+      </p>`;
+    }
+    return '';
   }
 
   private _renderError(text: string) {

@@ -25,6 +25,8 @@ export const theme = css`
 
     --rl-error-bg: #fdecea;
     --rl-error-text: #611a15;
+    --rl-warning-bg: #fff4e5;
+    --rl-warning-text: #663c00;
 
     --rl-focus-color: lightblue;
     --rl-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -52,6 +54,8 @@ export const theme = css`
 
       --rl-error-bg: #4a2320;
       --rl-error-text: #f8d7d5;
+      --rl-warning-bg: #4a3a1a;
+      --rl-warning-text: #fbe7c4;
     }
   }
 `;

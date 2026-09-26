@@ -106,5 +106,33 @@
   "unreadButton": {
     "message": "unread",
     "description": "Button to show unread reading items."
+  },
+  "storageFullPage": {
+    "message": "Your reading list is full, so \"$TITLE$\" wasn't saved. Your browser only allows a limited amount of synced storage - delete pages you've already read to make room, then add it again.",
+    "description": "Shown in the popup when adding a page failed because browser sync storage is full.",
+    "placeholders": {
+      "title": {
+        "content": "$1",
+        "example": "Example Domain"
+      }
+    }
+  },
+  "storageFull": {
+    "message": "Your reading list is full, so that change wasn't saved. Delete pages you've already read to make room.",
+    "description": "Shown in the popup when an edit or reorder failed because browser sync storage is full."
+  },
+  "storageAlmostFull": {
+    "message": "Your reading list is $PERCENT$% full. Delete pages you've already read to keep room for new ones.",
+    "description": "Shown in the popup when browser sync storage is at least 90% used.",
+    "placeholders": {
+      "percent": {
+        "content": "$1",
+        "example": "93"
+      }
+    }
+  },
+  "storageFullBadge": {
+    "message": "Reading List is full - this page wasn't saved. Open the Reading List to make room.",
+    "description": "Toolbar button tooltip after adding a page from the right-click menu failed because storage is full."
   }
 }

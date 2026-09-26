@@ -2,9 +2,21 @@ import { rl } from './rl.js';
 import { ListItemData } from './storage/store.js';
 
 export const isFirefox = navigator.userAgent.includes('Firefox');
+export const BADGE_COLOR = '#2ea99c';
+const BADGE_FULL_COLOR = '#cc4444';
 
-export function message(key: string, fallback = ''): string {
-  return chrome?.i18n.getMessage(key) || fallback;
+export function message(
+  key: string,
+  fallback = '',
+  ...substitutions: string[]
+): string {
+  return (
+    chrome?.i18n.getMessage(key, substitutions) ||
+    substitutions.reduce(
+      (text, value, i) => text.replaceAll(`$${i + 1}`, value),
+      fallback,
+    )
+  );
 }
 
 export async function getActiveTab(): Promise<chrome.tabs.Tab | null> {
@@ -36,6 +48,26 @@ export async function syncBadgeForTab(tabId: number, url?: string) {
     ? (await rl.getListItems()).some((item) => item.url === url)
     : false;
   await chrome.action.setBadgeText({ tabId, text: onList ? '✔' : '' });
+  await chrome.action.setBadgeBackgroundColor({ tabId, color: BADGE_COLOR });
+  await chrome.action.setTitle({
+    tabId,
+    title: message('appName', 'Reading List'),
+  });
+}
+
+export async function showStorageFullBadge(tabId: number) {
+  await chrome.action.setBadgeText({ tabId, text: '!' });
+  await chrome.action.setBadgeBackgroundColor({
+    tabId,
+    color: BADGE_FULL_COLOR,
+  });
+  await chrome.action.setTitle({
+    tabId,
+    title: message(
+      'storageFullBadge',
+      "Reading List is full - this page wasn't saved. Open the Reading List to make room.",
+    ),
+  });
 }
 
 export async function syncBadgeForActiveTab() {

@@ -1,11 +1,18 @@
 import { rl } from './lib/rl.js';
 import { getSettings } from './lib/settings.js';
-import { addPage, message, syncBadgeForTab } from './lib/browser.js';
+import {
+  addPage,
+  BADGE_COLOR,
+  message,
+  showStorageFullBadge,
+  syncBadgeForTab,
+} from './lib/browser.js';
+import { StorageFullError } from './lib/storage/store.js';
 
 const ADD_PAGE_MENU = 'add-page-to-reading-list';
 const ADD_LINK_MENU = 'add-link-to-reading-list';
 
-chrome.action.setBadgeBackgroundColor({ color: '#2ea99c' });
+chrome.action.setBadgeBackgroundColor({ color: BADGE_COLOR });
 
 async function syncContextMenu() {
   const settings = await getSettings();
@@ -36,7 +43,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       : info.menuItemId === ADD_PAGE_MENU && tab?.url
         ? addPage(tab.url, tab.title || tab.url, tab.favIconUrl)
         : null;
-  added?.catch(console.error);
+  added?.catch((err) => {
+    console.error(err);
+    if (err instanceof StorageFullError && tab?.id !== undefined)
+      void showStorageFullBadge(tab.id);
+  });
 });
 
 async function markViewedAndSyncBadge(tabId: number, url: string) {

@@ -38,6 +38,15 @@ export const styles = css`
     color: var(--rl-error-text);
   }
 
+  .storage-warning {
+    margin: 0 0 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    background: var(--rl-warning-bg);
+    color: var(--rl-warning-text);
+  }
+
   .editing-overlay {
     position: absolute;
     inset: -1rem;

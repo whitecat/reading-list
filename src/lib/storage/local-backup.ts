@@ -4,6 +4,7 @@ const BACKUP_KEY = 'legacyBackup';
 const PENDING_KEY_FROM_3_3 = 'conversionPending';
 const LOAD_ERROR_KEY = 'lastLoadError';
 const CONVERSION_LOG_KEY = 'lastMigration';
+export const STORAGE_FULL_KEY = 'storageFull';
 
 export interface LocalBackup {
   items: ListItemData[];
@@ -88,4 +89,21 @@ export const getConversionLog = () =>
 
 export async function saveConversionLog(log: ConversionLog): Promise<void> {
   await chrome.storage.local.set({ [CONVERSION_LOG_KEY]: log });
+}
+
+export interface StorageFullNotice {
+  title: string;
+  occurredAt: number;
+}
+
+export const getStorageFullNotice = () =>
+  readLocal<StorageFullNotice>(STORAGE_FULL_KEY);
+
+export async function saveStorageFullNotice(title: string): Promise<void> {
+  const notice: StorageFullNotice = { title, occurredAt: Date.now() };
+  await chrome.storage.local.set({ [STORAGE_FULL_KEY]: notice });
+}
+
+export async function clearStorageFullNotice(): Promise<void> {
+  await chrome.storage.local.remove(STORAGE_FULL_KEY);
 }

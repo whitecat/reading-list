@@ -11,7 +11,7 @@ import { getStorageDiagnostics } from '../lib/storage/diagnostics.js';
 import { readItemsWithoutWriting } from '../lib/storage/load.js';
 import { getLocalBackup } from '../lib/storage/local-backup.js';
 import { flatStore } from '../lib/storage/flat-store.js';
-import { ListItemData } from '../lib/storage/store.js';
+import { ListItemData, syncUsage } from '../lib/storage/store.js';
 import { styles } from '../styles/options.styles.js';
 import { theme } from '../styles/theme.styles.js';
 import { reset } from '../styles/reset.styles.js';
@@ -38,6 +38,7 @@ export class ReadingListOptions extends LitElement {
 
   @state() private _diagnostics = '';
   @state() private _diagnosticsCopied = false;
+  @state() private _storageUsage = '';
   @query('#importInput') private _importInput?: HTMLInputElement;
 
   private _unsubscribeSettings?: () => void;
@@ -45,6 +46,7 @@ export class ReadingListOptions extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     void this._loadSettings();
+    void this._loadStorageUsage();
     this._unsubscribeSettings?.();
     this._unsubscribeSettings = onSettingsChanged((settings) => {
       this.settings = {
@@ -84,6 +86,7 @@ export class ReadingListOptions extends LitElement {
 
       <div class="section">
         <h3>Backup & Restore</h3>
+        ${this._storageUsage ? html`<p class="storage-usage">${this._storageUsage}</p>` : ''}
         <button @click=${this.exportList}>Export Reading List</button>
         <input
           id="importInput"
@@ -137,6 +140,26 @@ export class ReadingListOptions extends LitElement {
     };
   }
 
+  private async _loadStorageUsage() {
+    try {
+      const [items, usage] = await Promise.all([
+        rl.getListItems(),
+        syncUsage(),
+      ]);
+      const percent = Math.min(
+        100,
+        Math.round((usage.bytes / usage.quota) * 100),
+      );
+      this._storageUsage =
+        `${items.length} pages saved, using ${percent}% of your browser's synced storage.` +
+        (percent >= 90
+          ? " It's almost full - delete pages you've already read to make room for new ones."
+          : '');
+    } catch (err) {
+      console.error('Failed to read storage usage', err);
+    }
+  }
+
   private async _onSettingChange(key: CheckboxSettingKey, e: Event) {
     const checked = (e.target as HTMLInputElement).checked;
     this.settings = { ...this.settings, [key]: checked };
@@ -153,6 +176,7 @@ export class ReadingListOptions extends LitElement {
       )
     ) {
       await rl.clearAll();
+      await this._loadStorageUsage();
     }
   }
 
@@ -198,10 +222,20 @@ export class ReadingListOptions extends LitElement {
           : null;
 
       if (items) {
-        const { succeeded, firstError, diagnostics } =
+        const { succeeded, firstError, storageFull, diagnostics } =
           await rl.bulkAddReadingItems(items);
         if (succeeded === items.length) {
           alert(`Import complete! Added ${succeeded} items.`);
+        } else if (storageFull) {
+          alert(
+            `Your reading list is full. Imported ${succeeded} of ${items.length} items; ` +
+              `the other ${items.length - succeeded} didn't fit.\n\n` +
+              `Browsers only allow a limited amount of synced storage for an extension ` +
+              `(roughly 300 pages, depending on how long their addresses and titles are). ` +
+              `Delete pages you no longer need and import the file again - ` +
+              `pages already on your list won't be duplicated.` +
+              (diagnostics ? `\n\nDiagnostics: ${diagnostics}` : ''),
+          );
         } else {
           alert(
             `Imported ${succeeded} of ${items.length} items. ` +
@@ -217,6 +251,7 @@ export class ReadingListOptions extends LitElement {
       alert('Failed to import: ' + err);
     }
     input.value = '';
+    await this._loadStorageUsage();
   }
 
   async exportList() {

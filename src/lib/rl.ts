@@ -1,7 +1,12 @@
 import { loadItems, PREFERRED_STORE } from './storage/load.js';
 import {
+  clearStorageFullNotice,
+  saveStorageFullNotice,
+} from './storage/local-backup.js';
+import {
   ItemStore,
   ListItemData,
+  StorageFullError,
   syncBytes,
   writeSync,
 } from './storage/store.js';
@@ -13,6 +18,7 @@ export interface ImportResult {
   succeeded: number;
   failed: number;
   firstError: unknown;
+  storageFull: boolean;
   diagnostics: string;
 }
 
@@ -98,7 +104,14 @@ class RL {
   async addReadingItem(item: ListItemData): Promise<ListItemData> {
     await this.getListItems();
     const stored = toStoredItem(item, this.topIndex() - 1);
-    await writeSync(await this.store.planUpsert([stored]));
+    try {
+      await writeSync(await this.store.planUpsert([stored]));
+    } catch (err) {
+      if (err instanceof StorageFullError)
+        await saveStorageFullNotice(stored.title).catch(() => {});
+      throw err;
+    }
+    await clearStorageFullNotice().catch(() => {});
     this.replaceItems([stored]);
     this.broadcastChange();
     return stored;
@@ -111,6 +124,7 @@ class RL {
     let firstError: unknown = null;
     let bytesWrittenSoFar = 0;
     let diagnostics = '';
+    let storageFull = false;
 
     for (let start = 0; start < rawItems.length; start += IMPORT_BATCH_SIZE) {
       const batch: ListItemData[] = [];
@@ -137,6 +151,7 @@ class RL {
           `this batch: ${keyBytes.length} keys / ~${batchBytes}B (largest key ~${Math.max(0, ...keyBytes)}B), ` +
           `error: ${err instanceof Error ? `${err.name}: ${err.message}` : String(err)}`;
         firstError ??= err;
+        storageFull = err instanceof StorageFullError;
         break;
       }
       bytesWrittenSoFar += batchBytes;
@@ -149,6 +164,7 @@ class RL {
       succeeded,
       failed: rawItems.length - succeeded,
       firstError,
+      storageFull,
       diagnostics,
     };
   }
@@ -156,6 +172,7 @@ class RL {
   async removeReadingItem(url: string): Promise<void> {
     await this.getListItems();
     await writeSync(await this.store.planRemove([url]));
+    await clearStorageFullNotice().catch(() => {});
     this.list = this.list.filter((item) => item.url !== url);
     this.broadcastChange();
   }
@@ -193,6 +210,7 @@ class RL {
 
   async clearAll(): Promise<void> {
     await chrome.storage.sync.clear();
+    await clearStorageFullNotice().catch(() => {});
     this.list = [];
     this.loaded = true;
     this.broadcastChange();
