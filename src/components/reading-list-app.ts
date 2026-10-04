@@ -52,6 +52,30 @@ const REVEAL_FIRST_DELAY_MS = 150;
 const SYNC_ERROR_VISIBLE_MS = 4000;
 
 const REVIEW_AFTER_ITEM_COUNT = 6;
+function firefoxSidebarAction() {
+  return (
+    window as unknown as {
+      browser?: { sidebarAction?: { toggle: () => void } };
+    }
+  ).browser?.sidebarAction;
+}
+
+function hasFirefoxSidebar(): boolean {
+  return firefoxSidebarAction() !== undefined;
+}
+
+function sidePanelApi() {
+  return (
+    chrome as unknown as {
+      sidePanel?: { open: (options: { windowId: number }) => Promise<void> };
+    }
+  )?.sidePanel;
+}
+
+function hasSidePanel(): boolean {
+  return typeof sidePanelApi()?.open === 'function';
+}
+
 const REVIEW_URL = isFirefox
   ? 'https://addons.mozilla.org/en-US/firefox/addon/reading_list/'
   : 'https://chrome.google.com/webstore/detail/reading-list/lloccabjgblebdmncjndmiibianflabo/reviews';
@@ -111,9 +135,17 @@ export class ReadingListAppElement extends LitElement {
     }
   }
 
+  private _windowId?: number;
+
   override connectedCallback(): void {
     super.connectedCallback();
     document.title = message('appName', 'Reading List');
+    if (hasSidePanel()) {
+      chrome.windows
+        .getCurrent()
+        .then((win) => (this._windowId = win.id))
+        .catch(console.error);
+    }
     this._unsubscribeList?.();
     this._unsubscribeList = rl.subscribe(async () => {
       this._listItems = await rl.getListItems();
@@ -211,7 +243,6 @@ export class ReadingListAppElement extends LitElement {
         this._draggedUrl !== null ? DRAG_TIMING : ENTER_EXIT_TIMING,
       in: CARD_IN_KEYFRAMES,
       out: CARD_OUT_KEYFRAMES,
-      skipInitial: true,
       disabled: this._draggedUrl === url,
     };
   }
@@ -256,7 +287,7 @@ export class ReadingListAppElement extends LitElement {
       <header>
         <div class="header-top">
           ${
-            isFirefox && !isSidebar
+            !isSidebar && (hasFirefoxSidebar() || hasSidePanel())
               ? html`<button
                   class="sidebar-button"
                   aria-label="Open sidebar"
@@ -442,11 +473,16 @@ export class ReadingListAppElement extends LitElement {
   }
 
   private _onSidebarClick() {
-    (
-      window as unknown as {
-        browser?: { sidebarAction?: { toggle: () => void } };
-      }
-    ).browser?.sidebarAction?.toggle();
+    const firefoxSidebar = firefoxSidebarAction();
+    if (firefoxSidebar) {
+      firefoxSidebar.toggle();
+      return;
+    }
+    if (this._windowId === undefined) return;
+    sidePanelApi()
+      ?.open({ windowId: this._windowId })
+      .then(() => window.close())
+      .catch(console.error);
   }
 
   private _onDragStart = (event: DragEvent) => {

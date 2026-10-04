@@ -1,6 +1,6 @@
 # Reading List
 
-A Chrome and Firefox extension for saving pages to read later. Free on the [Chrome Web Store](https://chrome.google.com/webstore/detail/lloccabjgblebdmncjndmiibianflabo) and [Firefox Addons](https://addons.mozilla.org/firefox/addon/reading_list/).
+A Chrome and Firefox extension for saving pages to read later. The Chrome build also runs on Microsoft Edge and Opera. Free on the [Chrome Web Store](https://chrome.google.com/webstore/detail/lloccabjgblebdmncjndmiibianflabo) and [Firefox Addons](https://addons.mozilla.org/firefox/addon/reading_list/).
 
 ![Chrome Reading List extension](images/search-screenshot.png)
 
@@ -50,7 +50,7 @@ Or, if you would rather do it the hard way, you can build the extension from the
    npm run build
    ```
 
-The build command assembles all the files in the `build` folder. After it’s built, you can load it into Chrome or Firefox.
+The build command assembles all the files in the `build` folder. `npm run package` builds and writes store-ready zips for Chrome, Edge, Opera and Firefox to `dist/`. After it’s built, you can load it into Chrome or Firefox.
 
 #### Load into Chrome
 
