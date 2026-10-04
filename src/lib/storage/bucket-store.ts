@@ -107,26 +107,30 @@ async function afterLoad(data: SyncData, items: ListItemData[]): Promise<void> {
     bucketCount = storedCount;
     return;
   }
+  let fresh: StoreLayout;
   try {
-    const fresh = layout(items);
-    if (storedCount !== fresh.bucketCount) {
-      await chrome.storage.sync.set(fresh.data);
-      const stale = Object.keys(data).filter(
-        (key) => isBucketKey(key) && !(key in fresh.data),
-      );
-      if (stale.length > 0) await chrome.storage.sync.remove(stale);
-    }
-    bucketCount = fresh.bucketCount!;
+    fresh = layout(items);
+    await chrome.storage.sync.set(fresh.data);
   } catch (err) {
     if (typeof storedCount !== 'number') throw err;
     bucketCount = storedCount;
+    return;
   }
+  bucketCount = fresh.bucketCount!;
+  const stale = Object.keys(data).filter(
+    (key) => isBucketKey(key) && !(key in fresh.data),
+  );
+  if (stale.length > 0) await chrome.storage.sync.remove(stale);
 }
 
 async function planUpsert(items: ListItemData[]): Promise<SyncWrite> {
   const groups = groupByBucket(items, (item) => item.url, bucketCount);
-  const current = await chrome.storage.sync.get([...groups.keys()]);
-  const set: SyncData = {};
+  const current = await chrome.storage.sync.get([
+    ...groups.keys(),
+    BUCKET_COUNT_KEY,
+  ]);
+  const set: SyncData =
+    BUCKET_COUNT_KEY in current ? {} : { [BUCKET_COUNT_KEY]: bucketCount };
   for (const [key, incoming] of groups) {
     const incomingByUrl = new Map(incoming.map((item) => [item.url, item]));
     const existing = decodeBucket(current[key]);
