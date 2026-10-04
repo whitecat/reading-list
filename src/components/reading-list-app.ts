@@ -503,12 +503,15 @@ export class ReadingListAppElement extends LitElement {
   private _onDragOver = (event: DragEvent) => {
     if (!this._canReorder || !this._listItems || !this._draggedUrl) return;
     event.preventDefault();
-    const targetUrl = itemElementFrom(event)?.href;
-    if (!targetUrl || targetUrl === this._draggedUrl) return;
+    const target = itemElementFrom(event);
+    if (!target || target.href === this._draggedUrl) return;
     const items = [...this._listItems];
     const from = items.findIndex((item) => item.url === this._draggedUrl);
-    const to = items.findIndex((item) => item.url === targetUrl);
+    const to = items.findIndex((item) => item.url === target.href);
     if (from === -1 || to === -1) return;
+    const rect = target.getBoundingClientRect();
+    const pastMiddle = event.clientY > rect.top + rect.height / 2;
+    if (from < to ? !pastMiddle : pastMiddle) return;
     items.splice(to, 0, ...items.splice(from, 1));
     this._listItems = items;
   };
