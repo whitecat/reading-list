@@ -30,8 +30,7 @@ import { reset } from '../styles/reset.styles.js';
 import './reading-list-item.js';
 
 const CARD_IN_KEYFRAMES: Keyframe[] = [
-  { maxHeight: '0px', transform: 'translateX(100%) scaleY(0)', offset: 0 },
-  { maxHeight: '100px', offset: 0.8 },
+  { transform: 'translateX(100%) scaleY(0)', offset: 0 },
   { transform: 'translateX(0) scaleY(1)', offset: 1 },
 ];
 
