@@ -33,5 +33,5 @@ export const flatStore: ItemStore = {
   layout,
   planUpsert: async (items) => ({ set: layout(items).data, remove: [] }),
   planRemove: async (urls) => ({ set: {}, remove: urls }),
-  afterLoad: async () => {},
+  afterLoad: () => {},
 };

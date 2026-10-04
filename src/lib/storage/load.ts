@@ -37,12 +37,13 @@ export async function loadItems(): Promise<LoadResult> {
     let store = PREFERRED_STORE;
     const interrupted = (await getPendingConversionSince()) !== null;
     if (interrupted || Object.keys(data).some(OTHER_STORE.ownsKey)) {
+      PREFERRED_STORE.afterLoad(data);
       const converted = await convertToPreferred(data, interrupted);
       if (converted) data = await chrome.storage.sync.get(null);
       else store = OTHER_STORE;
     }
     const items = store.readItems(data);
-    await store.afterLoad(data, items);
+    store.afterLoad(data);
     await markLoadErrorResolved().catch(() => {});
     return { items, store };
   } catch (err) {

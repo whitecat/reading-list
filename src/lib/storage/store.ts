@@ -26,7 +26,7 @@ export interface ItemStore {
   layout(items: ListItemData[]): StoreLayout;
   planUpsert(items: ListItemData[]): Promise<SyncWrite>;
   planRemove(urls: string[]): Promise<SyncWrite>;
-  afterLoad(data: SyncData, items: ListItemData[]): Promise<void>;
+  afterLoad(data: SyncData): void;
 }
 
 export class StorageFullError extends Error {

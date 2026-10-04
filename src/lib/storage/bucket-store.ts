@@ -14,9 +14,16 @@ import {
 
 const BUCKET_KEY = /^b\d+$/;
 const BUCKET_COUNT_KEY = '__bv';
-const BUCKET_COUNTS = [25, 30, 35, 40];
+const DEFAULT_BUCKET_COUNT = 25;
 
-let bucketCount = BUCKET_COUNTS[0];
+let bucketCount = DEFAULT_BUCKET_COUNT;
+
+function storedBucketCount(data: SyncData): number | null {
+  const count = data[BUCKET_COUNT_KEY];
+  return typeof count === 'number' && Number.isInteger(count) && count > 0
+    ? count
+    : null;
+}
 
 export function bucketKey(url: string, count: number): string {
   let hash = 0x811c9dc5;
@@ -64,31 +71,27 @@ function groupByBucket<T>(
   return groups;
 }
 
-function layoutAtCount(items: ListItemData[], count: number): SyncData | null {
-  const data: SyncData = { [BUCKET_COUNT_KEY]: count };
+function layout(items: ListItemData[]): StoreLayout {
+  const count = bucketCount;
+  const laidOut: SyncData = { [BUCKET_COUNT_KEY]: count };
   for (const [key, bucketItems] of groupByBucket(
     items,
     (item) => item.url,
     count,
   )) {
-    data[key] = encodeBucket(bucketItems);
-    if (syncBytes(key, data[key]) > syncQuotaBytesPerKey()) return null;
-  }
-  return serializedBytes(data) > syncQuotaBytes() ? null : data;
-}
-
-function layout(items: ListItemData[]): StoreLayout {
-  let best: StoreLayout | null = null;
-  for (const count of BUCKET_COUNTS) {
-    const data = layoutAtCount(items, count);
-    if (data && (!best || serializedBytes(data) < serializedBytes(best.data))) {
-      best = { data, bucketCount: count };
+    laidOut[key] = encodeBucket(bucketItems);
+    if (syncBytes(key, laidOut[key]) > syncQuotaBytesPerKey()) {
+      throw new StorageFullError(
+        `Bucket ${key} would exceed ${syncQuotaBytesPerKey()} bytes`,
+      );
     }
   }
-  if (best) return best;
-  throw new StorageFullError(
-    `No bucket count fits ${syncQuotaBytes()} bytes with every bucket under ${syncQuotaBytesPerKey()} bytes`,
-  );
+  if (serializedBytes(laidOut) > syncQuotaBytes()) {
+    throw new StorageFullError(
+      `The list would exceed ${syncQuotaBytes()} bytes`,
+    );
+  }
+  return { data: laidOut, bucketCount: count };
 }
 
 function readItems(data: SyncData): ListItemData[] {
@@ -97,30 +100,8 @@ function readItems(data: SyncData): ListItemData[] {
     .flatMap((key) => decodeBucket(data[key]));
 }
 
-async function afterLoad(data: SyncData, items: ListItemData[]): Promise<void> {
-  const storedCount = data[BUCKET_COUNT_KEY];
-  if (
-    typeof storedCount === 'number' &&
-    BUCKET_COUNTS.includes(storedCount) &&
-    layoutAtCount(items, storedCount)
-  ) {
-    bucketCount = storedCount;
-    return;
-  }
-  let fresh: StoreLayout;
-  try {
-    fresh = layout(items);
-    await chrome.storage.sync.set(fresh.data);
-  } catch (err) {
-    if (typeof storedCount !== 'number') throw err;
-    bucketCount = storedCount;
-    return;
-  }
-  bucketCount = fresh.bucketCount!;
-  const stale = Object.keys(data).filter(
-    (key) => isBucketKey(key) && !(key in fresh.data),
-  );
-  if (stale.length > 0) await chrome.storage.sync.remove(stale);
+function afterLoad(data: SyncData): void {
+  bucketCount = storedBucketCount(data) ?? DEFAULT_BUCKET_COUNT;
 }
 
 async function planUpsert(items: ListItemData[]): Promise<SyncWrite> {
