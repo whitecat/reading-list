@@ -18,7 +18,7 @@ import {
   SyncData,
   syncBytes,
   syncQuotaBytes,
-  utf8ByteLength,
+  serializedBytes,
   writeSync,
 } from './store.js';
 
@@ -100,7 +100,7 @@ function assertFitsTotalQuota(data: SyncData, layout: SyncData): void {
       after[key] = value;
   }
   Object.assign(after, layout);
-  const bytes = utf8ByteLength(JSON.stringify(after));
+  const bytes = serializedBytes(after);
   if (bytes > syncQuotaBytes()) {
     throw new StorageFullError(
       `Converted list would need ${bytes} of ${syncQuotaBytes()} bytes`,
@@ -133,7 +133,7 @@ async function convertToPreferred(
       (total, key) => total + syncBytes(key, data[key]),
       0,
     ),
-    serializedBytesBefore: utf8ByteLength(JSON.stringify(data)),
+    serializedBytesBefore: serializedBytes(data),
     outcome: 'failed',
   };
   const fromItems = resuming

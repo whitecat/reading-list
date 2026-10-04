@@ -1,8 +1,4 @@
-import {
-  bucketStats,
-  bucketStore,
-  startingBucketCount,
-} from './bucket-store.js';
+import { bucketStats, bucketStore } from './bucket-store.js';
 import { flatStore } from './flat-store.js';
 import { OTHER_STORE, PREFERRED_STORE } from './load.js';
 import {
@@ -80,7 +76,7 @@ async function describeSync(data: SyncData): Promise<string[]> {
 
   return [
     `Items: ${buckets.items.length}`,
-    `Buckets used: ${buckets.keys.length} / ${startingBucketCount(buckets.items.length)}`,
+    `Buckets used: ${buckets.keys.length} / ${typeof buckets.storedCount === 'number' ? buckets.storedCount : 'n/a'}`,
     `Bytes in use (browser-reported): ${await bytesInUse(chrome.storage.sync)} / ${quota}`,
     `Bytes in use (manual estimate): ${manualBytes} / ${quota}`,
     `Bytes in use (serialized, Firefox's enforced number): ${utf8ByteLength(JSON.stringify(data))} / ${quota}`,

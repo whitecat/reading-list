@@ -5,7 +5,9 @@ import {
   StorageFullError,
   StoreLayout,
   SyncData,
+  serializedBytes,
   syncBytes,
+  syncQuotaBytes,
   syncQuotaBytesPerKey,
   SyncWrite,
 } from './store.js';
@@ -15,12 +17,6 @@ const BUCKET_COUNT_KEY = '__bv';
 const BUCKET_COUNTS = [25, 30, 35, 40];
 
 let bucketCount = BUCKET_COUNTS[0];
-
-export function startingBucketCount(itemCount: number): number {
-  if (itemCount <= 150) return 25;
-  if (itemCount <= 250) return 30;
-  return 35;
-}
 
 export function bucketKey(url: string, count: number): string {
   let hash = 0x811c9dc5;
@@ -78,19 +74,20 @@ function layoutAtCount(items: ListItemData[], count: number): SyncData | null {
     data[key] = encodeBucket(bucketItems);
     if (syncBytes(key, data[key]) > syncQuotaBytesPerKey()) return null;
   }
-  return data;
+  return serializedBytes(data) > syncQuotaBytes() ? null : data;
 }
 
 function layout(items: ListItemData[]): StoreLayout {
-  const candidates = BUCKET_COUNTS.filter(
-    (count) => count >= startingBucketCount(items.length),
-  );
-  for (const count of candidates) {
+  let best: StoreLayout | null = null;
+  for (const count of BUCKET_COUNTS) {
     const data = layoutAtCount(items, count);
-    if (data) return { data, bucketCount: count };
+    if (data && (!best || serializedBytes(data) < serializedBytes(best.data))) {
+      best = { data, bucketCount: count };
+    }
   }
+  if (best) return best;
   throw new StorageFullError(
-    `No bucket count keeps every bucket under ${syncQuotaBytesPerKey()} bytes`,
+    `No bucket count fits ${syncQuotaBytes()} bytes with every bucket under ${syncQuotaBytesPerKey()} bytes`,
   );
 }
 
@@ -102,22 +99,28 @@ function readItems(data: SyncData): ListItemData[] {
 
 async function afterLoad(data: SyncData, items: ListItemData[]): Promise<void> {
   const storedCount = data[BUCKET_COUNT_KEY];
-  let fresh: StoreLayout;
-  try {
-    fresh = layout(items);
-  } catch (err) {
-    if (typeof storedCount !== 'number') throw err;
+  if (
+    typeof storedCount === 'number' &&
+    BUCKET_COUNTS.includes(storedCount) &&
+    layoutAtCount(items, storedCount)
+  ) {
     bucketCount = storedCount;
     return;
   }
-  if (storedCount !== fresh.bucketCount) {
-    await chrome.storage.sync.set(fresh.data);
-    const stale = Object.keys(data).filter(
-      (key) => isBucketKey(key) && !(key in fresh.data),
-    );
-    if (stale.length > 0) await chrome.storage.sync.remove(stale);
+  try {
+    const fresh = layout(items);
+    if (storedCount !== fresh.bucketCount) {
+      await chrome.storage.sync.set(fresh.data);
+      const stale = Object.keys(data).filter(
+        (key) => isBucketKey(key) && !(key in fresh.data),
+      );
+      if (stale.length > 0) await chrome.storage.sync.remove(stale);
+    }
+    bucketCount = fresh.bucketCount!;
+  } catch (err) {
+    if (typeof storedCount !== 'number') throw err;
+    bucketCount = storedCount;
   }
-  bucketCount = fresh.bucketCount!;
 }
 
 async function planUpsert(items: ListItemData[]): Promise<SyncWrite> {
