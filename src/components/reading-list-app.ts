@@ -38,7 +38,7 @@ const CARD_IN_KEYFRAMES: Keyframe[] = [
 const CARD_OUT_KEYFRAMES: Keyframe[] = [
   { maxHeight: '100px', transform: 'translateX(0) scaleY(1)', offset: 0 },
   { maxHeight: '0px', offset: 0.4 },
-  { transform: 'translateX(100%) scaleY(0)', offset: 1 },
+  { maxHeight: '0px', transform: 'translateX(100%) scaleY(0)', offset: 1 },
 ];
 
 const ENTER_EXIT_TIMING: KeyframeAnimationOptions = {
