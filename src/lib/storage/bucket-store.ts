@@ -15,6 +15,7 @@ import {
 const BUCKET_KEY = /^b\d+$/;
 const BUCKET_COUNT_KEY = '__bv';
 const DEFAULT_BUCKET_COUNT = 25;
+const COUNTS_EVER_USED = [DEFAULT_BUCKET_COUNT, 30, 35, 40];
 
 let bucketCount = DEFAULT_BUCKET_COUNT;
 
@@ -100,8 +101,21 @@ function readItems(data: SyncData): ListItemData[] {
     .flatMap((key) => decodeBucket(data[key]));
 }
 
+function placedAt(data: SyncData, count: number): boolean {
+  return Object.keys(data)
+    .filter(isBucketKey)
+    .every((key) =>
+      decodeBucket(data[key]).every(
+        (item) => bucketKey(item.url, count) === key,
+      ),
+    );
+}
+
 function afterLoad(data: SyncData): void {
-  bucketCount = storedBucketCount(data) ?? DEFAULT_BUCKET_COUNT;
+  bucketCount =
+    storedBucketCount(data) ??
+    COUNTS_EVER_USED.find((count) => placedAt(data, count)) ??
+    DEFAULT_BUCKET_COUNT;
 }
 
 async function planUpsert(items: ListItemData[]): Promise<SyncWrite> {
