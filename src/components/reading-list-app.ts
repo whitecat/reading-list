@@ -490,6 +490,14 @@ export class ReadingListAppElement extends LitElement {
       return;
     }
     this._draggedUrl = itemElementFrom(event)?.href ?? null;
+    if (this._draggedUrl && this._listItems) {
+      this._listItems = visibleItems(this._listItems, {
+        query: '',
+        viewAll: true,
+        sortOption: this._sortOption,
+        sortOrder: this._sortOrder,
+      });
+    }
   };
 
   private _onDragOver = (event: DragEvent) => {
