@@ -1,9 +1,14 @@
 {
   "name": "reading-list-extension",
-  "version": "3.3",
+  "version": "3.4",
   "description": "Reading List extension with manifest v3",
   "scripts": {
     "build": "rm -rf extension/scripts build && tsc && rollup -c",
+    "package": "npm run build && node scripts/package.mjs all",
+    "package:chrome": "node scripts/package.mjs chrome",
+    "package:edge": "node scripts/package.mjs edge",
+    "package:opera": "node scripts/package.mjs opera",
+    "package:firefox": "node scripts/package.mjs firefox",
     "format": "prettier --write src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

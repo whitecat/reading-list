@@ -21,6 +21,11 @@ export const styles = css`
     border: 0 !important;
   }
 
+  .reading-list {
+    overflow-x: clip;
+    overflow-clip-margin: 1rem;
+  }
+
   reading-list-item {
     display: block;
   }

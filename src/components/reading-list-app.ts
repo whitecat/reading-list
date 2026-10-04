@@ -30,15 +30,14 @@ import { reset } from '../styles/reset.styles.js';
 import './reading-list-item.js';
 
 const CARD_IN_KEYFRAMES: Keyframe[] = [
-  { maxHeight: '0px', transform: 'translateX(100%) scaleY(0)', offset: 0 },
-  { maxHeight: '100px', offset: 0.8 },
+  { transform: 'translateX(100%) scaleY(0)', offset: 0 },
   { transform: 'translateX(0) scaleY(1)', offset: 1 },
 ];
 
 const CARD_OUT_KEYFRAMES: Keyframe[] = [
   { maxHeight: '100px', transform: 'translateX(0) scaleY(1)', offset: 0 },
   { maxHeight: '0px', offset: 0.4 },
-  { transform: 'translateX(100%) scaleY(0)', offset: 1 },
+  { maxHeight: '0px', transform: 'translateX(100%) scaleY(0)', offset: 1 },
 ];
 
 const ENTER_EXIT_TIMING: KeyframeAnimationOptions = {
@@ -52,6 +51,30 @@ const REVEAL_FIRST_DELAY_MS = 150;
 const SYNC_ERROR_VISIBLE_MS = 4000;
 
 const REVIEW_AFTER_ITEM_COUNT = 6;
+function firefoxSidebarAction() {
+  return (
+    window as unknown as {
+      browser?: { sidebarAction?: { toggle: () => void } };
+    }
+  ).browser?.sidebarAction;
+}
+
+function hasFirefoxSidebar(): boolean {
+  return firefoxSidebarAction() !== undefined;
+}
+
+function sidePanelApi() {
+  return (
+    chrome as unknown as {
+      sidePanel?: { open: (options: { windowId: number }) => Promise<void> };
+    }
+  )?.sidePanel;
+}
+
+function hasSidePanel(): boolean {
+  return typeof sidePanelApi()?.open === 'function';
+}
+
 const REVIEW_URL = isFirefox
   ? 'https://addons.mozilla.org/en-US/firefox/addon/reading_list/'
   : 'https://chrome.google.com/webstore/detail/reading-list/lloccabjgblebdmncjndmiibianflabo/reviews';
@@ -111,9 +134,17 @@ export class ReadingListAppElement extends LitElement {
     }
   }
 
+  private _windowId?: number;
+
   override connectedCallback(): void {
     super.connectedCallback();
     document.title = message('appName', 'Reading List');
+    if (hasSidePanel()) {
+      chrome.windows
+        .getCurrent()
+        .then((win) => (this._windowId = win.id))
+        .catch(console.error);
+    }
     this._unsubscribeList?.();
     this._unsubscribeList = rl.subscribe(async () => {
       this._listItems = await rl.getListItems();
@@ -211,7 +242,6 @@ export class ReadingListAppElement extends LitElement {
         this._draggedUrl !== null ? DRAG_TIMING : ENTER_EXIT_TIMING,
       in: CARD_IN_KEYFRAMES,
       out: CARD_OUT_KEYFRAMES,
-      skipInitial: true,
       disabled: this._draggedUrl === url,
     };
   }
@@ -256,7 +286,7 @@ export class ReadingListAppElement extends LitElement {
       <header>
         <div class="header-top">
           ${
-            isFirefox && !isSidebar
+            !isSidebar && (hasFirefoxSidebar() || hasSidePanel())
               ? html`<button
                   class="sidebar-button"
                   aria-label="Open sidebar"
@@ -442,11 +472,16 @@ export class ReadingListAppElement extends LitElement {
   }
 
   private _onSidebarClick() {
-    (
-      window as unknown as {
-        browser?: { sidebarAction?: { toggle: () => void } };
-      }
-    ).browser?.sidebarAction?.toggle();
+    const firefoxSidebar = firefoxSidebarAction();
+    if (firefoxSidebar) {
+      firefoxSidebar.toggle();
+      return;
+    }
+    if (this._windowId === undefined) return;
+    sidePanelApi()
+      ?.open({ windowId: this._windowId })
+      .then(() => window.close())
+      .catch(console.error);
   }
 
   private _onDragStart = (event: DragEvent) => {
@@ -455,17 +490,28 @@ export class ReadingListAppElement extends LitElement {
       return;
     }
     this._draggedUrl = itemElementFrom(event)?.href ?? null;
+    if (this._draggedUrl && this._listItems) {
+      this._listItems = visibleItems(this._listItems, {
+        query: '',
+        viewAll: true,
+        sortOption: this._sortOption,
+        sortOrder: this._sortOrder,
+      });
+    }
   };
 
   private _onDragOver = (event: DragEvent) => {
     if (!this._canReorder || !this._listItems || !this._draggedUrl) return;
     event.preventDefault();
-    const targetUrl = itemElementFrom(event)?.href;
-    if (!targetUrl || targetUrl === this._draggedUrl) return;
+    const target = itemElementFrom(event);
+    if (!target || target.href === this._draggedUrl) return;
     const items = [...this._listItems];
     const from = items.findIndex((item) => item.url === this._draggedUrl);
-    const to = items.findIndex((item) => item.url === targetUrl);
+    const to = items.findIndex((item) => item.url === target.href);
     if (from === -1 || to === -1) return;
+    const rect = target.getBoundingClientRect();
+    const pastMiddle = event.clientY > rect.top + rect.height / 2;
+    if (from < to ? !pastMiddle : pastMiddle) return;
     items.splice(to, 0, ...items.splice(from, 1));
     this._listItems = items;
   };

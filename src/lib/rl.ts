@@ -171,7 +171,7 @@ class RL {
     ).some((key) => item?.[key] !== updates[key]);
     if (!item || !changesSomething) return;
     const updated = { ...item, ...updates };
-    await writeSync(await this.store.planUpsert([updated]));
+    await writeSync(await this.store.planUpdate([updated]));
     this.list = this.list.map((existing) =>
       existing.url === url ? updated : existing,
     );
@@ -185,7 +185,7 @@ class RL {
       .filter((item) => indexByUrl.has(item.url))
       .map((item) => ({ ...item, index: indexByUrl.get(item.url) }));
     if (reordered.length === 0) return;
-    await writeSync(await this.store.planUpsert(reordered));
+    await writeSync(await this.store.planUpdate(reordered));
     const reorderedByUrl = new Map(reordered.map((item) => [item.url, item]));
     this.list = this.list.map((item) => reorderedByUrl.get(item.url) ?? item);
     this.broadcastChange();

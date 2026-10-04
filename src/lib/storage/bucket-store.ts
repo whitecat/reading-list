@@ -120,22 +120,32 @@ async function afterLoad(data: SyncData, items: ListItemData[]): Promise<void> {
   bucketCount = fresh.bucketCount!;
 }
 
-async function planUpsert(items: ListItemData[]): Promise<SyncWrite> {
+async function planMerge(
+  items: ListItemData[],
+  addMissing: boolean,
+): Promise<SyncWrite> {
   const groups = groupByBucket(items, (item) => item.url, bucketCount);
   const current = await chrome.storage.sync.get([...groups.keys()]);
   const set: SyncData = {};
   for (const [key, incoming] of groups) {
     const incomingByUrl = new Map(incoming.map((item) => [item.url, item]));
     const existing = decodeBucket(current[key]);
-    const updated = existing.map((item) => incomingByUrl.get(item.url) ?? item);
     const existingUrls = new Set(existing.map((item) => item.url));
-    const added = [...incomingByUrl.values()].filter(
-      (item) => !existingUrls.has(item.url),
-    );
+    const added = addMissing
+      ? [...incomingByUrl.values()].filter(
+          (item) => !existingUrls.has(item.url),
+        )
+      : [];
+    if (!addMissing && !incoming.some((item) => existingUrls.has(item.url)))
+      continue;
+    const updated = existing.map((item) => incomingByUrl.get(item.url) ?? item);
     set[key] = encodeBucket([...added, ...updated]);
   }
   return { set, remove: [] };
 }
+
+const planUpsert = (items: ListItemData[]) => planMerge(items, true);
+const planUpdate = (items: ListItemData[]) => planMerge(items, false);
 
 async function planRemove(urls: string[]): Promise<SyncWrite> {
   const groups = groupByBucket(urls, (url) => url, bucketCount);
@@ -157,6 +167,7 @@ export const bucketStore: ItemStore = {
   readItems,
   layout,
   planUpsert,
+  planUpdate,
   planRemove,
   afterLoad,
 };
