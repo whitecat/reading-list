@@ -13,7 +13,7 @@ graph TD
     subgraph Entry["Entry points (extension/*.html)"]
         Popup["popup.html"]
         Options["options.html"]
-        Sidebar["sidebar.html (Firefox)"]
+        Sidebar["sidebar.html (Firefox sidebar, Chrome/Edge side panel)"]
     end
 
     subgraph Components["src/components"]
@@ -82,7 +82,7 @@ Three HTML entry points, each mounting Lit components:
 
 - **`extension/popup.html`** — the popup shown when clicking the extension icon, mounts `<reading-list-app>`
 - **`extension/options.html`** — settings page, mounts `<reading-list-options>`
-- **`extension/sidebar.html`** — Firefox sidebar panel, mounts the same `<reading-list-app>` bundle as the popup
+- **`extension/sidebar.html`** — the sidebar page, mounts the same `<reading-list-app>` bundle as the popup. Firefox and Opera load it through `sidebar_action`; Chrome and Edge load it through `side_panel.default_path` (Side Panel API, `sidePanel` permission, Chrome 114+). The popup's Sidebar button appears when `browser.sidebarAction` or `chrome.sidePanel` exists and the page isn't already the sidebar. Firefox calls `browser.sidebarAction.toggle()`; Chrome/Edge call `chrome.sidePanel.open({ windowId })` and then `window.close()`. `open()` must run inside the click's user gesture, so the window id is fetched with `chrome.windows.getCurrent()` in `connectedCallback` and the click handler stays synchronous (`WINDOW_ID_CURRENT` isn't documented as accepted by `sidePanel.open`). `chrome.sidePanel` is reached through a narrow cast so `web-ext lint` doesn't flag `sidePanel.open` as an unsupported API in the Firefox build.
 
 Source (`src/`):
 
@@ -117,7 +117,7 @@ Items are **not** stored one key per bookmark. `chrome.storage.sync`/`browser.st
 
 Instead, items are grouped into **hashed buckets** (key format `b${hash(url) % bucketCount}`), each holding a compressed array of items. This removes the per-item key cap; the real ceiling becomes the ~100KB total byte quota.
 
-**The bucket count is fixed and never changed.** New lists use `DEFAULT_BUCKET_COUNT = 25`. If `__bv` holds a positive integer (existing lists may have 30, 35, 40 or another value), that count is honored as-is forever. If `__bv` is missing but buckets exist (3.3's Clear wiped `__bv` while a context kept its old count, so a re-import wrote buckets at that count with no `__bv`), `afterLoad()` uses the first of the counts any release has used (`COUNTS_EVER_USED`: 25, 30, 35, 40) that puts every stored item in its own bucket, falling back to 25. Sync therefore never holds two bucket layouts at once, and no load ever rewrites buckets. `layout()` in `bucket-store.ts` lays a set of items out at that count and throws `StorageFullError` if any encoded bucket exceeds `QUOTA_BYTES_PER_ITEM` or the whole layout, serialized as one JSON map the way Firefox enforces it (`serializedBytes()`), exceeds `QUOTA_BYTES`. The count is recorded in the `__bv` storage key; `bucket-store.ts` keeps it in a module variable, set on every load by `afterLoad()`, so every write computes bucket keys consistently. `planUpsert()` writes `__bv` whenever it's missing (e.g. after Clear, which wipes it but not the module variable), so buckets never sit in storage without the count they were written at.
+**The bucket count is fixed and never changed.** New lists use `DEFAULT_BUCKET_COUNT = 25`. If `__bv` holds a positive integer (existing lists may have 30, 35, 40 or another value), that count is honored as-is forever. If `__bv` is missing but buckets exist (3.3's Clear wiped `__bv` while a context kept its old count, so a re-import wrote buckets at that count with no `__bv`), `afterLoad()` uses the first of the counts any release has used (`COUNTS_EVER_USED`: 25, 30, 35, 40) that puts every stored item in its own bucket, falling back to 25. Sync therefore never holds two bucket layouts at once, and no load ever rewrites buckets. `layout()` in `bucket-store.ts` lays a set of items out at that count and throws `StorageFullError` if any encoded bucket exceeds `QUOTA_BYTES_PER_ITEM` or the whole layout, serialized as one JSON map the way Firefox enforces it (`serializedBytes()`), exceeds `QUOTA_BYTES`. The count is recorded in the `__bv` storage key; `bucket-store.ts` keeps it in a module variable, set on every load by `afterLoad()`, so every write computes bucket keys consistently. `planUpsert()` and `planUpdate()` write `__bv` whenever it's missing (e.g. after Clear, which wipes it but not the module variable), so buckets never sit in storage without the count they were written at.
 
 **Verified capacity is ~325 real-world items, not the ~1,200 once estimated.** That earlier number was based on synthetic test data averaging ~140 bytes/item (short, clean URLs, no query strings). Real saved items run closer to ~250 bytes/item raw once real URLs (search queries, tracking parameters) and real titles are counted — calibrated against an actual user's exported reading list. Importing a realistically-sized 1,100-item file gets **325 items** in before hitting the quota — confirmed identically in both Chrome and Firefox (ruling out a cross-browser quota-enforcement difference; an earlier theory that Firefox enforces quota more loosely didn't hold up once the same file was tested in both browsers instead of comparing against an old, much lighter synthetic file). `Storage Diagnostics` at that point: 95,432 of 102,400 bytes, 40/40 buckets used, largest bucket 6,142/8,192 bytes — **~294 bytes/item post-compression**, not the ~68 bytes/item the original fixed-`BUCKET_COUNT` rationale was calibrated against. **325 is the number to design and communicate around**, not ~1,200. One caveat: this reflects `bulkAddReadingItems`'s batch-of-25 stop-on-first-failure behavior (325 = 13 full batches), so the true byte-level ceiling is somewhat higher and one-at-a-time adds (not bulk import) aren't subject to the same batch-rounding.
 
@@ -249,7 +249,8 @@ The cost is real but small: a full `get(null)` plus decompressing every bucket p
 
 - **Remote reloads can overlap.** Two quick pings can leave two `loadItems()` calls in flight, and storage reads don't resolve in start order. `reloadAfterRemoteChange()` numbers each reload and only applies the newest; subscribers run after that, so a component can simply read `rl.getListItems()` in its subscription.
 - **Enter/exit animations need no special path for remote changes.** The list is rendered with `repeat()` keyed by URL and `@lit-labs/motion`'s `animate()`, so an item that disappears from `_listItems` for any reason — local delete, a change from another context — animates out, and a new one animates in. (Before the lit-motion change, the item component had a `_localDelete` flag and "ghost" items to tell local from remote removals; none of that exists any more.)
-- **The animations reproduce the pre-rewrite CSS keyframes.** The outer card (`CARD_IN_KEYFRAMES`/`CARD_OUT_KEYFRAMES` in `reading-list-app.ts`) does a quick non-bouncy reveal, while the inner content (`CONTENT_IN_KEYFRAMES` in `reading-list-item.ts`) runs the slower `slidein-bounce` shape at the same time: the original's two-layer motion, same offsets. Exit only ever animated the outer card, so there is no content exit animation. `_staggerReveal()` reproduces the original's first-10-items reveal, each delay shrinking from 150ms.
+- **The animations reproduce the pre-rewrite CSS keyframes.** The outer card (`CARD_IN_KEYFRAMES`/`CARD_OUT_KEYFRAMES` in `reading-list-app.ts`) does a quick non-bouncy reveal (transform only, so the entering card takes its final layout height immediately; siblings' FLIP via `properties: ['top']` assumes the final layout, so enter keyframes must not animate layout properties like `maxHeight`, or siblings overlap the card above until it reaches full height; only the exit keyframes animate `maxHeight`), while the inner content (`CONTENT_IN_KEYFRAMES` in `reading-list-item.ts`) runs the slower `slidein-bounce` shape at the same time: the original's two-layer motion, same offsets. Exit only ever animated the outer card, so there is no content exit animation. `_staggerReveal()` reproduces the original's first-10-items reveal, each delay shrinking from 150ms. Every property animated in these keyframe sets must have an explicit value at offset 1: an omitted final value interpolates to the underlying style, and non-interpolable pairs like `0px` -> `none` flip mid-animation.
+- **Don't pass `skipInitial` to `animate()` in `_motion()`.** `@lit-labs/motion` decides "initial" by whether the host's first `updateComplete` has resolved, and that check is itself what schedules it, so the first `animate()` directive to reach `hostUpdated` is always skipped. Cards are revealed one at a time after the host's first render, so the first card would never animate in while every later one does. The list renders nothing until `_load()` finishes, so no card needs suppressing.
 - **Node tests don't cover any of this.** The mocks define `chrome.storage.sync` but not `chrome.runtime` or `chrome.storage.onChanged`, so registration must be guarded (it is, via optional chaining) or every test fails at import — `RL`'s constructor registers its message listener at module load. Animations and DOM lifecycle can only be checked in a browser.
 - **Every component showing settings must subscribe to `onSettingsChanged`**, not just read them once on connect. Both `reading-list-app.ts` and `reading-list-options.ts` do. The options page originally didn't, so its checkboxes went stale whenever a setting changed in another context. Subscribe in `connectedCallback` (releasing any previous subscription first — it can fire more than once) and unsubscribe in `disconnectedCallback`.
 
@@ -306,12 +307,39 @@ The fastest real-browser check, and the one an agent can run without the user: l
 After a change to anything under `src/` or `extension/`, this is the loop used throughout this project:
 
 ```bash
-npm run build
-rm -f dist/reading-list-chrome.zip
-(cd build && zip -r -q -X ../dist/reading-list-chrome.zip . -x '*.DS_Store')
-npx web-ext build --source-dir=build --artifacts-dir=dist --overwrite-dest --filename=reading-list-firefox.zip
-npx web-ext lint --source-dir=build
+npm run package        # build, then write all four zips to dist/
+npx web-ext lint --source-dir=dist/unpacked/firefox
 ```
+
+`scripts/package.mjs` takes the existing `build/` and, for each target, copies it to `dist/unpacked/<target>/`, rewrites that copy's `manifest.json`, then zips the directory with the `zip` CLI (Chrome, Edge, Opera, excluding `.DS_Store`) or builds it with `npx web-ext build` (Firefox). Each target's directory is deleted and recreated on every run. `extension/manifest.json` stays the single superset source, and `build/` itself still carries that superset manifest (so `web-ext lint --source-dir=build` sees the unfiltered file). Keys removed per target (`permissions[sidePanel]` style entries remove one array element); the script fails if an expected key or entry is missing:
+
+| Target | Removed from the manifest |
+| --- | --- |
+| chrome, edge | `sidebar_action`, `browser_specific_settings`, `background.scripts` (keeps `side_panel` and the `sidePanel` permission) |
+| opera | `browser_specific_settings`, `background.scripts`, `side_panel`, the `sidePanel` permission (keeps `sidebar_action`) |
+| firefox | `background.service_worker`, `minimum_chrome_version`, `side_panel`, the `sidePanel` permission (keeps the gecko keys, `background.scripts`, `sidebar_action`) |
+
+Load an unpacked build from `dist/unpacked/<target>/`, not from `build/`. Per-target scripts run against an existing `build/` without rebuilding:
+
+- `npm run package:chrome` → `dist/reading-list-chrome.zip`
+- `npm run package:edge` → `dist/reading-list-edge.zip`
+- `npm run package:opera` → `dist/reading-list-opera.zip`
+- `npm run package:firefox` → `dist/reading-list-firefox.zip`
+
+Lint the Firefox package with `npx web-ext lint --source-dir=dist/unpacked/firefox`.
+
+### Publishing
+
+`.github/workflows/release.yml` runs on `workflow_dispatch` and on `v*` tags. It builds once, runs `web-ext lint`, creates the four zips and uploads them as the `reading-list-packages` workflow artifact. On tag pushes it also attaches them to a GitHub release.
+
+| Browser | Store | How |
+| --- | --- | --- |
+| Chrome | Chrome Web Store | Manual upload of `reading-list-chrome.zip` |
+| Firefox | Firefox Add-ons | Manual upload of `reading-list-firefox.zip` |
+| Edge | Microsoft Partner Center | `publish-edge` job via `wdzeng/edge-addon` (pinned), on tag pushes or a dispatch with `publish_edge` enabled |
+| Opera | addons.opera.com | Manual upload of `reading-list-opera.zip`; Opera has no upload API, so the workflow only produces the zip |
+
+The Edge job needs the repository secrets `EDGE_PRODUCT_ID`, `EDGE_CLIENT_ID` and `EDGE_API_KEY`. The action can only publish a new version of an add-on that already exists in Partner Center; the first submission is manual.
 
 ### Loading into Browser
 
@@ -325,7 +353,7 @@ npx web-ext lint --source-dir=build
 
 ## Key Implementation Details
 
-- **Manifest V3**: service worker, no persistent background context. The manifest's `content_security_policy.extension_pages` only honors a narrow set of directives (`script-src`, `object-src`) — `script-src-attr` is silently discarded, so inline event-handler attributes (e.g. `onerror="..."`) get blocked by Chrome's platform-default CSP instead. Use Lit `@event` bindings, never inline handlers.
+- **Manifest V3**: service worker, no persistent background context. The superset manifest declares both sidebar mechanisms (`sidebar_action` and `side_panel` + the `sidePanel` permission) and `minimum_chrome_version` is 114, the Side Panel API's minimum; `scripts/package.mjs` strips whichever the target browser doesn't use. The manifest's `content_security_policy.extension_pages` only honors a narrow set of directives (`script-src`, `object-src`) — `script-src-attr` is silently discarded, so inline event-handler attributes (e.g. `onerror="..."`) get blocked by Chrome's platform-default CSP instead. Use Lit `@event` bindings, never inline handlers.
 - **Firefox minimum version is deliberately 140.0** (`browser_specific_settings.gecko.strict_min_version`, `142.0` for `gecko_android`), higher than it needs to be for anything the code actually uses. It's pinned there because `browser_specific_settings.gecko.data_collection_permissions` (required by Firefox on all new/updated extensions; this one declares `required: ["none"]` since it collects nothing) isn't recognized before those versions — declaring it on an older `strict_min_version` produces its own lint warnings. Don't lower `strict_min_version` without also reconsidering that key.
 - **Adding Trusted Types CSP does not silence `web-ext lint`'s `UNSAFE_VAR_ASSIGNMENT` warnings.** Verified directly: `require-trusted-types-for 'script'; trusted-types lit-html` was added and rebuilt, warning count was identical before and after, then reverted. These warnings come from lit-html's own bundled template-instantiation code (`<template>.innerHTML = ...`, used to parse each tagged template's static HTML via the browser's native parser) wherever it lands in the Rollup output, not a sign our own code is doing this. `addons-linter` is a static source scanner with no concept of trusted-type wrapping; there is no CSP or code change in this repo that removes them short of dropping Lit. Leave them. **Which files they land in isn't stable** — Rollup names each shared chunk after one of the modules inside it, and that assignment shifts whenever the import graph between entry points changes (e.g. one more `.styles.ts` file becoming shared by a new combination of components can add or move a chunk and its warning). Check `npx web-ext lint --source-dir=build --output=json` for the current file/count rather than trusting a number written down here.
 - **Storage**: see Storage Architecture above.

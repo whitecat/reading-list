@@ -32,6 +32,15 @@ export const flatStore: ItemStore = {
       .map((key) => data[key] as ListItemData),
   layout,
   planUpsert: async (items) => ({ set: layout(items).data, remove: [] }),
+  planUpdate: async (items) => {
+    const existing = await chrome.storage.sync.get(
+      items.map((item) => item.url),
+    );
+    return {
+      set: layout(items.filter((item) => item.url in existing)).data,
+      remove: [],
+    };
+  },
   planRemove: async (urls) => ({ set: {}, remove: urls }),
   afterLoad: () => {},
 };

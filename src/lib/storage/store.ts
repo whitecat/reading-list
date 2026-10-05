@@ -25,6 +25,7 @@ export interface ItemStore {
   readItems(data: SyncData): ListItemData[];
   layout(items: ListItemData[]): StoreLayout;
   planUpsert(items: ListItemData[]): Promise<SyncWrite>;
+  planUpdate(items: ListItemData[]): Promise<SyncWrite>;
   planRemove(urls: string[]): Promise<SyncWrite>;
   afterLoad(data: SyncData): void;
 }
