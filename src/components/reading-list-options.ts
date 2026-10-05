@@ -105,7 +105,7 @@ export class ReadingListOptions extends LitElement {
             Download Local Backup
           </button>
           <button class="danger" @click=${this._onResetClick}>
-            ${message('clearData', 'Clear Reading List')}
+            ${message('clearData')}
           </button>
         </div>
         ${
@@ -144,14 +144,7 @@ export class ReadingListOptions extends LitElement {
   }
 
   async _onResetClick() {
-    if (
-      confirm(
-        message(
-          'confirmMsg',
-          'You are about to delete everything in the reading list. Are you sure?',
-        ),
-      )
-    ) {
+    if (confirm(message('confirmMsg'))) {
       await rl.clearAll();
     }
   }

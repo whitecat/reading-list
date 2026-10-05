@@ -13,12 +13,12 @@ async function syncContextMenu() {
   if (!settings.addContextMenu) return;
   chrome.contextMenus.create({
     id: ADD_PAGE_MENU,
-    title: message('addPage', 'Add page to Reading List'),
+    title: message('addPage'),
     contexts: ['page'],
   });
   chrome.contextMenus.create({
     id: ADD_LINK_MENU,
-    title: message('addLink', 'Add link to Reading List'),
+    title: message('addLink'),
     contexts: ['link'],
   });
 }

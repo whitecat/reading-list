@@ -5,21 +5,25 @@ import {
   StorageFullError,
   StoreLayout,
   SyncData,
+  serializedBytes,
   syncBytes,
+  syncQuotaBytes,
   syncQuotaBytesPerKey,
   SyncWrite,
 } from './store.js';
 
 const BUCKET_KEY = /^b\d+$/;
 const BUCKET_COUNT_KEY = '__bv';
-const BUCKET_COUNTS = [25, 30, 35, 40];
+const DEFAULT_BUCKET_COUNT = 25;
+const COUNTS_EVER_USED = [DEFAULT_BUCKET_COUNT, 30, 35, 40];
 
-let bucketCount = BUCKET_COUNTS[0];
+let bucketCount = DEFAULT_BUCKET_COUNT;
 
-export function startingBucketCount(itemCount: number): number {
-  if (itemCount <= 150) return 25;
-  if (itemCount <= 250) return 30;
-  return 35;
+function storedBucketCount(data: SyncData): number | null {
+  const count = data[BUCKET_COUNT_KEY];
+  return typeof count === 'number' && Number.isInteger(count) && count > 0
+    ? count
+    : null;
 }
 
 export function bucketKey(url: string, count: number): string {
@@ -68,30 +72,27 @@ function groupByBucket<T>(
   return groups;
 }
 
-function layoutAtCount(items: ListItemData[], count: number): SyncData | null {
-  const data: SyncData = { [BUCKET_COUNT_KEY]: count };
+function layout(items: ListItemData[]): StoreLayout {
+  const count = bucketCount;
+  const laidOut: SyncData = { [BUCKET_COUNT_KEY]: count };
   for (const [key, bucketItems] of groupByBucket(
     items,
     (item) => item.url,
     count,
   )) {
-    data[key] = encodeBucket(bucketItems);
-    if (syncBytes(key, data[key]) > syncQuotaBytesPerKey()) return null;
+    laidOut[key] = encodeBucket(bucketItems);
+    if (syncBytes(key, laidOut[key]) > syncQuotaBytesPerKey()) {
+      throw new StorageFullError(
+        `Bucket ${key} would exceed ${syncQuotaBytesPerKey()} bytes`,
+      );
+    }
   }
-  return data;
-}
-
-function layout(items: ListItemData[]): StoreLayout {
-  const candidates = BUCKET_COUNTS.filter(
-    (count) => count >= startingBucketCount(items.length),
-  );
-  for (const count of candidates) {
-    const data = layoutAtCount(items, count);
-    if (data) return { data, bucketCount: count };
+  if (serializedBytes(laidOut) > syncQuotaBytes()) {
+    throw new StorageFullError(
+      `The list would exceed ${syncQuotaBytes()} bytes`,
+    );
   }
-  throw new StorageFullError(
-    `No bucket count keeps every bucket under ${syncQuotaBytesPerKey()} bytes`,
-  );
+  return { data: laidOut, bucketCount: count };
 }
 
 function readItems(data: SyncData): ListItemData[] {
@@ -100,24 +101,21 @@ function readItems(data: SyncData): ListItemData[] {
     .flatMap((key) => decodeBucket(data[key]));
 }
 
-async function afterLoad(data: SyncData, items: ListItemData[]): Promise<void> {
-  const storedCount = data[BUCKET_COUNT_KEY];
-  let fresh: StoreLayout;
-  try {
-    fresh = layout(items);
-  } catch (err) {
-    if (typeof storedCount !== 'number') throw err;
-    bucketCount = storedCount;
-    return;
-  }
-  if (storedCount !== fresh.bucketCount) {
-    await chrome.storage.sync.set(fresh.data);
-    const stale = Object.keys(data).filter(
-      (key) => isBucketKey(key) && !(key in fresh.data),
+function placedAt(data: SyncData, count: number): boolean {
+  return Object.keys(data)
+    .filter(isBucketKey)
+    .every((key) =>
+      decodeBucket(data[key]).every(
+        (item) => bucketKey(item.url, count) === key,
+      ),
     );
-    if (stale.length > 0) await chrome.storage.sync.remove(stale);
-  }
-  bucketCount = fresh.bucketCount!;
+}
+
+function afterLoad(data: SyncData): void {
+  bucketCount =
+    storedBucketCount(data) ??
+    COUNTS_EVER_USED.find((count) => placedAt(data, count)) ??
+    DEFAULT_BUCKET_COUNT;
 }
 
 async function planMerge(
@@ -125,8 +123,12 @@ async function planMerge(
   addMissing: boolean,
 ): Promise<SyncWrite> {
   const groups = groupByBucket(items, (item) => item.url, bucketCount);
-  const current = await chrome.storage.sync.get([...groups.keys()]);
-  const set: SyncData = {};
+  const current = await chrome.storage.sync.get([
+    ...groups.keys(),
+    BUCKET_COUNT_KEY,
+  ]);
+  const set: SyncData =
+    BUCKET_COUNT_KEY in current ? {} : { [BUCKET_COUNT_KEY]: bucketCount };
   for (const [key, incoming] of groups) {
     const incomingByUrl = new Map(incoming.map((item) => [item.url, item]));
     const existing = decodeBucket(current[key]);

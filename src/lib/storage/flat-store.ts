@@ -42,5 +42,5 @@ export const flatStore: ItemStore = {
     };
   },
   planRemove: async (urls) => ({ set: {}, remove: urls }),
-  afterLoad: async () => {},
+  afterLoad: () => {},
 };

@@ -27,7 +27,7 @@ export interface ItemStore {
   planUpsert(items: ListItemData[]): Promise<SyncWrite>;
   planUpdate(items: ListItemData[]): Promise<SyncWrite>;
   planRemove(urls: string[]): Promise<SyncWrite>;
-  afterLoad(data: SyncData, items: ListItemData[]): Promise<void>;
+  afterLoad(data: SyncData): void;
 }
 
 export class StorageFullError extends Error {
@@ -42,6 +42,9 @@ export const syncQuotaBytesPerKey = (): number =>
 export function utf8ByteLength(text: string): number {
   return new TextEncoder().encode(text).length;
 }
+
+export const serializedBytes = (data: SyncData): number =>
+  utf8ByteLength(JSON.stringify(data));
 
 export function syncBytes(key: string, value: unknown): number {
   return utf8ByteLength(key) + utf8ByteLength(JSON.stringify(value));

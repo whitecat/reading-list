@@ -18,7 +18,7 @@ import {
   SyncData,
   syncBytes,
   syncQuotaBytes,
-  utf8ByteLength,
+  serializedBytes,
   writeSync,
 } from './store.js';
 
@@ -37,12 +37,13 @@ export async function loadItems(): Promise<LoadResult> {
     let store = PREFERRED_STORE;
     const interrupted = (await getPendingConversionSince()) !== null;
     if (interrupted || Object.keys(data).some(OTHER_STORE.ownsKey)) {
+      PREFERRED_STORE.afterLoad(data);
       const converted = await convertToPreferred(data, interrupted);
       if (converted) data = await chrome.storage.sync.get(null);
       else store = OTHER_STORE;
     }
     const items = store.readItems(data);
-    await store.afterLoad(data, items);
+    store.afterLoad(data);
     await markLoadErrorResolved().catch(() => {});
     return { items, store };
   } catch (err) {
@@ -100,7 +101,7 @@ function assertFitsTotalQuota(data: SyncData, layout: SyncData): void {
       after[key] = value;
   }
   Object.assign(after, layout);
-  const bytes = utf8ByteLength(JSON.stringify(after));
+  const bytes = serializedBytes(after);
   if (bytes > syncQuotaBytes()) {
     throw new StorageFullError(
       `Converted list would need ${bytes} of ${syncQuotaBytes()} bytes`,
@@ -133,7 +134,7 @@ async function convertToPreferred(
       (total, key) => total + syncBytes(key, data[key]),
       0,
     ),
-    serializedBytesBefore: utf8ByteLength(JSON.stringify(data)),
+    serializedBytesBefore: serializedBytes(data),
     outcome: 'failed',
   };
   const fromItems = resuming

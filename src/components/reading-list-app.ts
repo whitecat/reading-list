@@ -138,7 +138,7 @@ export class ReadingListAppElement extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    document.title = message('appName', 'Reading List');
+    document.title = message('appName');
     if (hasSidePanel()) {
       chrome.windows
         .getCurrent()
@@ -249,26 +249,8 @@ export class ReadingListAppElement extends LitElement {
   override render() {
     return html`
       ${this._renderHeader()} ${this._renderSearch()} ${this._renderControls()}
-      ${
-        this._syncError
-          ? this._renderError(
-              message(
-                'syncFailed',
-                "Couldn't save that change. It may not appear on your other devices.",
-              ),
-            )
-          : ''
-      }
-      ${
-        this._loadError
-          ? this._renderError(
-              message(
-                'loadFailed',
-                'Converting your reading list to the new format failed. Your saved pages are still safe in storage — open Options (the gear icon above) → Advanced to download a backup.',
-              ),
-            )
-          : ''
-      }
+      ${this._syncError ? this._renderError(message('syncFailed')) : ''}
+      ${this._loadError ? this._renderError(message('loadFailed')) : ''}
       ${this._renderList()}
       ${this._editingUrl !== null ? html`<div class="editing-overlay"></div>` : ''}
     `;
@@ -305,11 +287,11 @@ export class ReadingListAppElement extends LitElement {
           </button>
         </div>
         <div class="header-title">
-          <h1>${message('appName', 'Reading List')}</h1>
+          <h1>${message('appName')}</h1>
           <button
             class="save-button${isFirefox ? ' save-button-nudge' : ''}"
             id="save-button"
-            aria-label=${message('addPage', 'Add page to Reading List')}
+            aria-label=${message('addPage')}
             @click=${this._onSaveClick}
           >
             +
@@ -323,13 +305,13 @@ export class ReadingListAppElement extends LitElement {
     return html`
       <search class="search">
         <label class="visually-hidden" for="list-search"
-          >${message('search', 'Search')}</label
+          >${message('search')}</label
         >
         <input
           type="search"
           id="list-search"
           name="search"
-          placeholder=${message('search', 'Search')}
+          placeholder=${message('search')}
           autocomplete="off"
           @input=${(e: InputEvent) => (this._searchQuery = (e.target as HTMLInputElement).value.trim())}
         />
@@ -359,20 +341,20 @@ export class ReadingListAppElement extends LitElement {
             class=${this._viewAll ? 'active' : ''}
             @click=${() => this._onFilterClick(true)}
           >
-            ${message('allButton', 'all')}
+            ${message('allButton')}
             <span class="count">${this._listItems?.length ?? 0}</span>
           </button>
           <button
             class=${!this._viewAll ? 'active' : ''}
             @click=${() => this._onFilterClick(false)}
           >
-            ${message('unreadButton', 'unread')}
+            ${message('unreadButton')}
             <span class="count">${unreadCount}</span>
           </button>
         </div>
         <div class="sort">
-          ${sortButton('date', message('dateButton', 'date'))}
-          ${sortButton('title', message('titleButton', 'title'))}
+          ${sortButton('date', message('dateButton'))}
+          ${sortButton('title', message('titleButton'))}
         </div>
       </div>
     `;
