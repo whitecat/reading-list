@@ -290,6 +290,17 @@ Load/reload `live-test/` itself in the browser, never `old/`/`before-fix/`/`new/
 
 **Always do a full remove-and-reload**, not a soft "Reload," when swapping `live-test/`'s contents — both browsers can keep a previously-opened popup's old JS running across a same-folder reload (a real, repeatedly-hit trap this session), which looks exactly like a code change not having taken effect.
 
+### Headless Chrome (Playwright)
+
+The fastest real-browser check, and the one an agent can run without the user: load `build/` into headless Chromium, seed `chrome.storage.sync`, drive the popup and read storage back. Use it for any storage-layout change. Run the same script against the build from before the change too, so the bug is shown to reproduce and then go away.
+
+- **Keep Playwright out of the repo.** In the scratchpad: `npm init -y && npm i playwright-core`. Don't let it download browsers. Point `executablePath` at the Chrome for Testing already in `~/Library/Caches/ms-playwright/chromium-*/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`, because a fresh `playwright-core` expects a newer revision than the one installed. Use Chrome for Testing, not the `/Applications/Google Chrome.app`: recent branded Chrome builds ignore `--load-extension`.
+- **Launch:** `chromium.launchPersistentContext(tmpProfile, { executablePath, headless: true, channel: 'chromium', args: ['--disable-extensions-except=<dir>', '--load-extension=<dir>'] })`. Extensions need a persistent context. The extension id is the host of the service worker's URL (`ctx.serviceWorkers()[0]`, or `await ctx.waitForEvent('serviceworker')`).
+- **Seed storage** from a `chrome-extension://<id>/popup.html` page with `page.evaluate(chrome.storage.sync.clear(); chrome.storage.sync.set(seed))`, then open a *new* page so the popup loads from the seeded data. Build the seed in Node from the compiled `extension/scripts/lib/storage/bucket-store.js` (set `globalThis.chrome = { storage: { sync: {} } }` before importing it, `bucketStore.afterLoad({ __bv: n })`, then `bucketStore.layout(items).data`), so the encoding is the real one.
+- **Drive the UI through shadow roots:** `document.querySelector('reading-list-app').shadowRoot.querySelectorAll('reading-list-item')`, each with its own `shadowRoot` (`.title`, `.delete-button`, `.edit-button`, `.edit-title`). For an inline title edit, click `.edit-button`, set the input's `value`, then dispatch `input` and a `keydown` with `key: 'Enter'`. Wait ~1.5s after each action for the write and the animations. The rendered `reading-list-item` count can be one more than the stored items, so compare counts before and after rather than against the item total.
+- **"Reload" = close the page and open a new one**, which gets a fresh `rl` and re-runs `loadItems()`. Then decode the buckets from `chrome.storage.sync.get(null)` to count copies and duplicates and read `__bv`.
+- **Before-change build:** `git worktree add --detach <scratchpad>/prefix <commit>`, symlink `node_modules` in, `npm run build`, copy `build/` out, then remove the worktree.
+
 ### Full package + verify workflow
 
 After a change to anything under `src/` or `extension/`, this is the loop used throughout this project:
