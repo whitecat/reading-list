@@ -1,6 +1,10 @@
 notes.txt
+tmp/
 node_modules
 dist
 .DS_Store
 /.idea
 /reading-list.iml
+/build/
+/extension/scripts/
+*.zip
