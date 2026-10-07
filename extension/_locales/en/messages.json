@@ -31,6 +31,10 @@
     "message": "Backup:",
     "description": "Label for import and export button."
   },
+  "backupRestore": {
+    "message": "Backup & Restore",
+    "description": "Heading of the export/import section on the options page."
+  },
   "clearData": {
     "message": "Clear Reading List",
     "description": "The label for the button to clear all the reading list items"
@@ -43,6 +47,14 @@
     "message": "Show in context menu",
     "description": "The label for the context option."
   },
+  "copied": {
+    "message": "Copied",
+    "description": "Button label after the diagnostics report was copied."
+  },
+  "copyToClipboard": {
+    "message": "Copy to Clipboard",
+    "description": "Button that copies the storage diagnostics report."
+  },
   "dark": {
     "message": "Dark",
     "description": "The name for the dark theme."
@@ -51,9 +63,30 @@
     "message": "date",
     "description": "Button to sort by date."
   },
+  "defaultBehavior": {
+    "message": "Default Behavior",
+    "description": "Label above the default-behavior checkboxes on the options page."
+  },
   "deleteAll": {
     "message": "Delete everything!",
     "description": "Confirm message on clearing data"
+  },
+  "diagnosticsFailed": {
+    "message": "Storage Diagnostics itself failed: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    },
+    "description": "Shown in place of the diagnostics report when generating it fails. $ERROR$ is the error text."
+  },
+  "diagnosticsNote": {
+    "message": "Contains counts and sizes only - no page addresses or titles - so it's safe to send in a bug report.",
+    "description": "Privacy note shown above the storage diagnostics report."
+  },
+  "downloadLocalBackup": {
+    "message": "Download Local Backup",
+    "description": "Button that downloads the automatic local backup made before a data migration."
   },
   "export": {
     "message": "Export",
@@ -67,9 +100,68 @@
     "message": "Import",
     "description": "Button to Import reading list."
   },
+  "importComplete": {
+    "message": "Import complete! Added $COUNT$ items.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    },
+    "description": "Alert after a fully successful import. $COUNT$ is the number of items added."
+  },
+  "importDiagnostics": {
+    "message": "Diagnostics: $DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    },
+    "description": "Appended to the partial import alert. $DIAGNOSTICS$ is a short technical summary."
+  },
+  "importFailed": {
+    "message": "Failed to import: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    },
+    "description": "Alert when importing throws. $ERROR$ is the error text."
+  },
+  "importFirstError": {
+    "message": "First error: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    },
+    "description": "Appended to the partial import alert. $ERROR$ is the first error message."
+  },
+  "importInvalidFile": {
+    "message": "Invalid file format.",
+    "description": "Alert when the chosen import file has an unrecognised format."
+  },
+  "importPartial": {
+    "message": "Imported $SUCCEEDED$ of $TOTAL$ items. $FAILED$ failed.",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    },
+    "description": "Alert after a partly failed import. $SUCCEEDED$ imported, out of $TOTAL$, $FAILED$ failed."
+  },
   "light": {
     "message": "Light",
     "description": "The name for the light theme."
+  },
+  "noLocalBackup": {
+    "message": "No local backup found yet. One is saved automatically before the extension migrates data from an older version.",
+    "description": "Alert shown when Download Local Backup is clicked but no backup exists."
   },
   "openNewTab": {
     "message": "Open link in new tab",
@@ -90,6 +182,10 @@
   "search": {
     "message": "Search",
     "description": "The label for the search box."
+  },
+  "storageDiagnostics": {
+    "message": "Storage Diagnostics",
+    "description": "Button that shows the storage diagnostics report."
   },
   "syncFailed": {
     "message": "Couldn't save that change. Your list may be full, so try removing some pages.",

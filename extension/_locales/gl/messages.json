@@ -23,6 +23,9 @@
   "backup": {
     "message": "Respaldo:"
   },
+  "backupRestore": {
+    "message": "Copia de seguranza e restauración"
+  },
   "clearData": {
     "message": "Limpar Reading List"
   },
@@ -32,14 +35,37 @@
   "context": {
     "message": "Mostrar no menú contextual"
   },
+  "copied": {
+    "message": "Copiado"
+  },
+  "copyToClipboard": {
+    "message": "Copiar no portapapeis"
+  },
   "dark": {
     "message": "Oscuro"
   },
   "dateButton": {
     "message": "data"
   },
+  "defaultBehavior": {
+    "message": "Comportamento predeterminado"
+  },
   "deleteAll": {
     "message": "Quita todo!"
+  },
+  "diagnosticsFailed": {
+    "message": "Fallou o propio diagnóstico do almacenamento: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "diagnosticsNote": {
+    "message": "Só contén contas e tamaños, sen enderezos de páxinas nin títulos, polo que é seguro envialo nun informe de erro."
+  },
+  "downloadLocalBackup": {
+    "message": "Descargar copia de seguranza local"
   },
   "export": {
     "message": "Exportar"
@@ -50,8 +76,60 @@
   "import": {
     "message": "Importar"
   },
+  "importComplete": {
+    "message": "Importación completada! Engadíronse $COUNT$ elementos.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiagnostics": {
+    "message": "Diagnóstico: $DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Erro ao importar: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFirstError": {
+    "message": "Primeiro erro: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importInvalidFile": {
+    "message": "Formato de ficheiro non válido."
+  },
+  "importPartial": {
+    "message": "Importáronse $SUCCEEDED$ de $TOTAL$ elementos. Fallaron $FAILED$.",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    }
+  },
   "light": {
     "message": "Claro"
+  },
+  "noLocalBackup": {
+    "message": "Aínda non hai ningunha copia de seguranza local. Gárdase unha automaticamente antes de que a extensión migre datos dunha versión anterior."
   },
   "openNewTab": {
     "message": "Abrir ligazón en nova lapela"
@@ -67,6 +145,9 @@
   },
   "search": {
     "message": "Busca"
+  },
+  "storageDiagnostics": {
+    "message": "Diagnóstico do almacenamento"
   },
   "theme": {
     "message": "Decorado:"

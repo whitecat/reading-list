@@ -23,6 +23,9 @@
   "backup": {
     "message": "Резервно копие:"
   },
+  "backupRestore": {
+    "message": "Архивиране и възстановяване"
+  },
   "clearData": {
     "message": "Изчистване на „Списък за четене“"
   },
@@ -32,14 +35,37 @@
   "context": {
     "message": "Показване в контекстното меню"
   },
+  "copied": {
+    "message": "Копирано"
+  },
+  "copyToClipboard": {
+    "message": "Копиране в клипборда"
+  },
   "dark": {
     "message": "тъмна"
   },
   "dateButton": {
     "message": "дата"
   },
+  "defaultBehavior": {
+    "message": "Поведение по подразбиране"
+  },
   "deleteAll": {
     "message": "Изтриване на всичко!"
+  },
+  "diagnosticsFailed": {
+    "message": "Самата диагностика на хранилището се провали: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "diagnosticsNote": {
+    "message": "Съдържа само бройки и размери, без адреси на страници или заглавия, затова е безопасно да се изпрати в доклад за грешка."
+  },
+  "downloadLocalBackup": {
+    "message": "Изтегляне на локалния архив"
   },
   "export": {
     "message": "Изнасяне"
@@ -50,8 +76,60 @@
   "import": {
     "message": "Внасяне"
   },
+  "importComplete": {
+    "message": "Импортирането завърши! Добавени са $COUNT$ елемента.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiagnostics": {
+    "message": "Диагностика: $DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Импортирането не успя: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFirstError": {
+    "message": "Първа грешка: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importInvalidFile": {
+    "message": "Невалиден формат на файла."
+  },
+  "importPartial": {
+    "message": "Импортирани са $SUCCEEDED$ от $TOTAL$ елемента. $FAILED$ не успяха.",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    }
+  },
   "light": {
     "message": "светла"
+  },
+  "noLocalBackup": {
+    "message": "Все още няма локален архив. Автоматично се запазва такъв, преди разширението да прехвърли данни от по-стара версия."
   },
   "openNewTab": {
     "message": "Отваряне на връзка в нов раздел"
@@ -67,6 +145,9 @@
   },
   "search": {
     "message": "Търсене"
+  },
+  "storageDiagnostics": {
+    "message": "Диагностика на хранилището"
   },
   "theme": {
     "message": "Тема:"

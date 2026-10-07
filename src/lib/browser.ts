@@ -3,8 +3,11 @@ import { ListItemData } from './storage/store.js';
 
 export const isFirefox = navigator.userAgent.includes('Firefox');
 
-export function message(key: string): string {
-  return chrome.i18n.getMessage(key);
+export function message(
+  key: string,
+  substitutions?: string | string[],
+): string {
+  return chrome.i18n.getMessage(key, substitutions);
 }
 
 export async function getActiveTab(): Promise<chrome.tabs.Tab | null> {

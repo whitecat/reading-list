@@ -48,6 +48,7 @@ export class ReadingListOptions extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    document.title = message('optionsTitle');
     void this._loadSettings();
     this._unsubscribeSettings?.();
     this._unsubscribeSettings = onSettingsChanged((settings) => {
@@ -68,10 +69,10 @@ export class ReadingListOptions extends LitElement {
 
   override render() {
     return html`
-      <h2>Reading List Options</h2>
+      <h2>${message('optionsTitle')}</h2>
 
       <div class="section">
-        <h3>Default Behavior</h3>
+        <h3>${message('defaultBehavior')}</h3>
         ${CHECKBOX_SETTINGS.filter(
           ({ firefoxOnly }) => !firefoxOnly || isFirefox,
         ).map(
@@ -90,8 +91,8 @@ export class ReadingListOptions extends LitElement {
       </div>
 
       <div class="section">
-        <h3>Backup & Restore</h3>
-        <button @click=${this.exportList}>Export Reading List</button>
+        <h3>${message('backupRestore')}</h3>
+        <button @click=${this.exportList}>${message('export')}</button>
         <input
           id="importInput"
           type="file"
@@ -99,17 +100,17 @@ export class ReadingListOptions extends LitElement {
           style="display:none"
           @change=${this.importList}
         />
-        <button @click=${this.openImportDialog}>Import Reading List</button>
+        <button @click=${this.openImportDialog}>${message('import')}</button>
       </div>
 
       <details class="section">
-        <summary>Advanced</summary>
+        <summary>${message('advancedOptions')}</summary>
         <div>
           <button @click=${this._onDiagnosticsClick}>
-            Storage Diagnostics
+            ${message('storageDiagnostics')}
           </button>
           <button @click=${this._onDownloadLocalBackupClick}>
-            Download Local Backup
+            ${message('downloadLocalBackup')}
           </button>
           <button class="danger" @click=${this._onResetClick}>
             ${message('clearData')}
@@ -119,12 +120,11 @@ export class ReadingListOptions extends LitElement {
           this._diagnostics
             ? html`
                 <div class="diagnostics">
-                  <p>
-                    Contains counts and sizes only - no page addresses or titles
-                    - so it's safe to send in a bug report.
-                  </p>
+                  <p>${message('diagnosticsNote')}</p>
                   <button @click=${this._onCopyDiagnosticsClick}>
-                    ${this._diagnosticsCopied ? 'Copied' : 'Copy to Clipboard'}
+                    ${message(
+                      this._diagnosticsCopied ? 'copied' : 'copyToClipboard',
+                    )}
                   </button>
                   <pre>${this._diagnostics}</pre>
                 </div>
@@ -162,7 +162,7 @@ export class ReadingListOptions extends LitElement {
     try {
       this._diagnostics = await getStorageDiagnostics();
     } catch (err) {
-      this._diagnostics = `Storage Diagnostics itself failed: ${err}`;
+      this._diagnostics = message('diagnosticsFailed', String(err));
     }
   }
 
@@ -174,9 +174,7 @@ export class ReadingListOptions extends LitElement {
   async _onDownloadLocalBackupClick() {
     const backup = await getLocalBackup();
     if (!backup) {
-      alert(
-        'No local backup found yet. One is saved automatically before the extension migrates data from an older version.',
-      );
+      alert(message('noLocalBackup'));
       return;
     }
     downloadJson('reading-list-backup.json', backup.items);
@@ -202,20 +200,27 @@ export class ReadingListOptions extends LitElement {
         const { succeeded, firstError, diagnostics } =
           await rl.bulkAddReadingItems(items);
         if (succeeded === items.length) {
-          alert(`Import complete! Added ${succeeded} items.`);
+          alert(message('importComplete', String(succeeded)));
         } else {
           alert(
-            `Imported ${succeeded} of ${items.length} items. ` +
-              `${items.length - succeeded} failed` +
-              (firstError ? ` (first error: ${firstError})` : '') +
-              (diagnostics ? `\n\nDiagnostics: ${diagnostics}` : ''),
+            message('importPartial', [
+              String(succeeded),
+              String(items.length),
+              String(items.length - succeeded),
+            ]) +
+              (firstError
+                ? ` ${message('importFirstError', String(firstError))}`
+                : '') +
+              (diagnostics
+                ? `\n\n${message('importDiagnostics', String(diagnostics))}`
+                : ''),
           );
         }
       } else {
-        alert('Invalid file format.');
+        alert(message('importInvalidFile'));
       }
     } catch (err) {
-      alert('Failed to import: ' + err);
+      alert(message('importFailed', String(err)));
     }
     input.value = '';
   }

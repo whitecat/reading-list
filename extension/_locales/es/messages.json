@@ -23,6 +23,9 @@
   "backup": {
     "message": "Copia de seguridad:"
   },
+  "backupRestore": {
+    "message": "Copia de seguridad y restauración"
+  },
   "clearData": {
     "message": "Borrar la lista de lectura"
   },
@@ -32,14 +35,37 @@
   "context": {
     "message": "Mostrar en el menú contextual"
   },
+  "copied": {
+    "message": "Copiado"
+  },
+  "copyToClipboard": {
+    "message": "Copiar al portapapeles"
+  },
   "dark": {
     "message": "oscuro"
   },
   "dateButton": {
     "message": "fecha"
   },
+  "defaultBehavior": {
+    "message": "Comportamiento predeterminado"
+  },
   "deleteAll": {
     "message": "Eliminar todo!"
+  },
+  "diagnosticsFailed": {
+    "message": "Falló el propio diagnóstico del almacenamiento: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "diagnosticsNote": {
+    "message": "Solo contiene recuentos y tamaños, sin direcciones de páginas ni títulos, por lo que es seguro enviarlo en un informe de error."
+  },
+  "downloadLocalBackup": {
+    "message": "Descargar copia de seguridad local"
   },
   "export": {
     "message": "Exportar"
@@ -50,8 +76,60 @@
   "import": {
     "message": "Importar"
   },
+  "importComplete": {
+    "message": "¡Importación completada! Se añadieron $COUNT$ elementos.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiagnostics": {
+    "message": "Diagnóstico: $DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Error al importar: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFirstError": {
+    "message": "Primer error: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importInvalidFile": {
+    "message": "Formato de archivo no válido."
+  },
+  "importPartial": {
+    "message": "Se importaron $SUCCEEDED$ de $TOTAL$ elementos. Fallaron $FAILED$.",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    }
+  },
   "light": {
     "message": "claro"
+  },
+  "noLocalBackup": {
+    "message": "Todavía no hay ninguna copia de seguridad local. Se guarda una automáticamente antes de que la extensión migre datos de una versión anterior."
   },
   "openNewTab": {
     "message": "Abrir enlace en una nueva pestaña"
@@ -67,6 +145,9 @@
   },
   "search": {
     "message": "Buscar"
+  },
+  "storageDiagnostics": {
+    "message": "Diagnóstico del almacenamiento"
   },
   "theme": {
     "message": "Tema:"

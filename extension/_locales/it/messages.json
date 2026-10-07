@@ -23,6 +23,9 @@
   "backup": {
     "message": "Backup:"
   },
+  "backupRestore": {
+    "message": "Backup e ripristino"
+  },
   "clearData": {
     "message": "Ripristinare Elenco Lettura"
   },
@@ -32,14 +35,37 @@
   "context": {
     "message": "Mostrare nel menu di contesto"
   },
+  "copied": {
+    "message": "Copiato"
+  },
+  "copyToClipboard": {
+    "message": "Copia negli appunti"
+  },
   "dark": {
     "message": "scuro"
   },
   "dateButton": {
     "message": "data"
   },
+  "defaultBehavior": {
+    "message": "Comportamento predefinito"
+  },
   "deleteAll": {
     "message": "Eliminare tutto!"
+  },
+  "diagnosticsFailed": {
+    "message": "La diagnostica dell'archiviazione è fallita: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "diagnosticsNote": {
+    "message": "Contiene solo conteggi e dimensioni, senza indirizzi di pagine né titoli, quindi può essere inviato in sicurezza in una segnalazione di bug."
+  },
+  "downloadLocalBackup": {
+    "message": "Scarica backup locale"
   },
   "export": {
     "message": "Esportare"
@@ -50,8 +76,60 @@
   "import": {
     "message": "Importare"
   },
+  "importComplete": {
+    "message": "Importazione completata! Aggiunti $COUNT$ elementi.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiagnostics": {
+    "message": "Diagnostica: $DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Importazione non riuscita: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFirstError": {
+    "message": "Primo errore: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importInvalidFile": {
+    "message": "Formato del file non valido."
+  },
+  "importPartial": {
+    "message": "Importati $SUCCEEDED$ elementi su $TOTAL$. $FAILED$ non riusciti.",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    }
+  },
   "light": {
     "message": "luce"
+  },
+  "noLocalBackup": {
+    "message": "Nessun backup locale trovato. Ne viene salvato uno automaticamente prima che l'estensione migri i dati da una versione precedente."
   },
   "openNewTab": {
     "message": "Aprire il link in una nuova scheda"
@@ -67,6 +145,9 @@
   },
   "search": {
     "message": "Cerca"
+  },
+  "storageDiagnostics": {
+    "message": "Diagnostica archiviazione"
   },
   "theme": {
     "message": "Tema:"
