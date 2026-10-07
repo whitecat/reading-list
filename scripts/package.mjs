@@ -8,12 +8,11 @@ const distDir = resolve(root, 'dist');
 const unpackedDir = resolve(distDir, 'unpacked');
 
 const removals = {
-  chrome: ['sidebar_action', 'page_action', 'browser_specific_settings', 'background.scripts', 'action.default_area'],
-  edge: ['sidebar_action', 'page_action', 'browser_specific_settings', 'background.scripts', 'action.default_area'],
+  chrome: ['sidebar_action', 'page_action', 'browser_specific_settings', 'background.scripts'],
+  edge: ['sidebar_action', 'page_action', 'browser_specific_settings', 'background.scripts'],
   opera: [
     'page_action',
     'browser_specific_settings',
-    'action.default_area',
     'background.scripts',
     'side_panel',
     'permissions[sidePanel]',
