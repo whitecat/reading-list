@@ -16,7 +16,7 @@
     "description": "Button to show all reading items"
   },
   "animation": {
-    "message": "Enable animation:",
+    "message": "Enable animation",
     "description": "The label for the animation option."
   },
   "appDesc": {
@@ -40,7 +40,7 @@
     "description": "Message to ensure user knows they are deleting all app data"
   },
   "context": {
-    "message": "Show in context menu:",
+    "message": "Show in context menu",
     "description": "The label for the context option."
   },
   "dark": {
@@ -72,7 +72,7 @@
     "description": "The name for the light theme."
   },
   "openNewTab": {
-    "message": "Open link in new tab:",
+    "message": "Open link in new tab",
     "description": "Label for the option to open a new tab when a link is clicked"
   },
   "optionsTitle": {
@@ -80,7 +80,7 @@
     "description": "The title of the application's options menu."
   },
   "pageActionOption": {
-    "message": "Show in address bar:",
+    "message": "Show in address bar",
     "description": "The label for the address bar option."
   },
   "removePage": {

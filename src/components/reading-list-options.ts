@@ -21,20 +21,13 @@ type CheckboxSettingKey =
 
 const CHECKBOX_SETTINGS: {
   key: CheckboxSettingKey;
-  label: string;
+  labelKey: string;
   firefoxOnly?: boolean;
 }[] = [
-  { key: 'openNewTab', label: 'Open items in new tab by default' },
-  { key: 'animateItems', label: 'Animate items' },
-  {
-    key: 'addContextMenu',
-    label: 'Show "Add to Reading List" in the right-click menu',
-  },
-  {
-    key: 'addPageAction',
-    label: 'Show a button in the address bar',
-    firefoxOnly: true,
-  },
+  { key: 'openNewTab', labelKey: 'openNewTab' },
+  { key: 'animateItems', labelKey: 'animation' },
+  { key: 'addContextMenu', labelKey: 'context' },
+  { key: 'addPageAction', labelKey: 'pageActionOption', firefoxOnly: true },
 ];
 
 export class ReadingListOptions extends LitElement {
@@ -82,7 +75,7 @@ export class ReadingListOptions extends LitElement {
         ${CHECKBOX_SETTINGS.filter(
           ({ firefoxOnly }) => !firefoxOnly || isFirefox,
         ).map(
-          ({ key, label }) => html`
+          ({ key, labelKey }) => html`
             <div class="option">
               <input
                 type="checkbox"
@@ -90,7 +83,7 @@ export class ReadingListOptions extends LitElement {
                 ?checked=${this.settings[key]}
                 @change=${(e: Event) => this._onSettingChange(key, e)}
               />
-              <label for=${key}>${label}</label>
+              <label for=${key}>${message(labelKey)}</label>
             </div>
           `,
         )}

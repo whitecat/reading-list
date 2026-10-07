@@ -12,7 +12,7 @@
     "message": "tutto"
   },
   "animation": {
-    "message": "Attivare l'animazione:"
+    "message": "Attivare l'animazione"
   },
   "appDesc": {
     "message": "Questa estensione risparmia una lista di pagine web per leggere più tarde."
@@ -30,7 +30,7 @@
     "message": "Stai per eliminare tutti i contenuti della lista di lettura. Sei sicuro?"
   },
   "context": {
-    "message": "Mostrare nel menu di contesto:"
+    "message": "Mostrare nel menu di contesto"
   },
   "dark": {
     "message": "scuro"
@@ -54,13 +54,13 @@
     "message": "luce"
   },
   "openNewTab": {
-    "message": "Aprire il link in una nuova scheda:"
+    "message": "Aprire il link in una nuova scheda"
   },
   "optionsTitle": {
     "message": "Opzioni dell'Elenco Lettura"
   },
   "pageActionOption": {
-    "message": "Mostra nella barra degli indirizzi:"
+    "message": "Mostra nella barra degli indirizzi"
   },
   "removePage": {
     "message": "Rimuovere la pagina dall'Elenco Lettura"

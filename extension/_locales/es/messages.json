@@ -12,7 +12,7 @@
     "message": "todo"
   },
   "animation": {
-    "message": "Permitir animación:"
+    "message": "Permitir animación"
   },
   "appDesc": {
     "message": "Esta extensión de internet guarda una lista de enlaces de páginas para leer más tarde."
@@ -30,7 +30,7 @@
     "message": "Estás a punto de eliminar todo el contenido de la lista de lectura. ¿Estás seguro?"
   },
   "context": {
-    "message": "Mostrar en el menú contextual:"
+    "message": "Mostrar en el menú contextual"
   },
   "dark": {
     "message": "oscuro"
@@ -54,13 +54,13 @@
     "message": "claro"
   },
   "openNewTab": {
-    "message": "Abrir enlace en una nueva pestaña:"
+    "message": "Abrir enlace en una nueva pestaña"
   },
   "optionsTitle": {
     "message": "Opciones para la lista de lectura"
   },
   "pageActionOption": {
-    "message": "Mostrar en la barra de direcciones:"
+    "message": "Mostrar en la barra de direcciones"
   },
   "removePage": {
     "message": "Quitar página de la lista de lectura"

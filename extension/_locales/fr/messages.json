@@ -12,7 +12,7 @@
     "message": "tout"
   },
   "animation": {
-    "message": "Activer l'animation:"
+    "message": "Activer l'animation"
   },
   "appDesc": {
     "message": "Cette extension sauvegarde une liste de liens vers des pages a lire plus ulterieurement."
@@ -30,7 +30,7 @@
     "message": "Vous êtes sur le point de supprimer tout le contenu de la liste de lecture. Êtes-vous sûr?"
   },
   "context": {
-    "message": "Afficher dans le menu contextuel:"
+    "message": "Afficher dans le menu contextuel"
   },
   "dark": {
     "message": "foncé"
@@ -54,13 +54,13 @@
     "message": "lumière"
   },
   "openNewTab": {
-    "message": "Ouvrir un lien dans un nouvel onglet:"
+    "message": "Ouvrir un lien dans un nouvel onglet"
   },
   "optionsTitle": {
     "message": "Options de la liste de lecture"
   },
   "pageActionOption": {
-    "message": "Afficher dans la barre d'adresse:"
+    "message": "Afficher dans la barre d'adresse"
   },
   "removePage": {
     "message": "Retirer la page de la liste de lecture"

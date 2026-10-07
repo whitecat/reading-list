@@ -12,7 +12,7 @@
     "message": "alles"
   },
   "animation": {
-    "message": "Animation anschalten:"
+    "message": "Animation anschalten"
   },
   "appDesc": {
     "message": "Diese Erweiterung speichert eine liste von webseiten, die später gelesen werden."
@@ -30,7 +30,7 @@
     "message": "Sie sind dabei, alles in der Leseliste zu löschen. Bist du sicher?"
   },
   "context": {
-    "message": "Im Kontextmenü anzeigen:"
+    "message": "Im Kontextmenü anzeigen"
   },
   "dark": {
     "message": "Dunkles"
@@ -54,13 +54,13 @@
     "message": "Licht"
   },
   "openNewTab": {
-    "message": "Link in neuem Tab öffnen:"
+    "message": "Link in neuem Tab öffnen"
   },
   "optionsTitle": {
     "message": "Leselistenoptionen"
   },
   "pageActionOption": {
-    "message": "Im Adressleiste anzeigen:"
+    "message": "In der Adressleiste anzeigen"
   },
   "removePage": {
     "message": "Seite aus der Leseliste entfernen"

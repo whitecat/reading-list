@@ -12,7 +12,7 @@
     "message": "todo"
   },
   "animation": {
-    "message": "Habilitar animación:"
+    "message": "Habilitar animación"
   },
   "appDesc": {
     "message": "Esta extensión garda unha lista das ligazóns a páxinas para ler máis tarde."
@@ -30,7 +30,7 @@
     "message": "Vai borrar todo o contido la lista de lectura. Está seguro?"
   },
   "context": {
-    "message": "Mostrar no menú contextual:"
+    "message": "Mostrar no menú contextual"
   },
   "dark": {
     "message": "Oscuro"
@@ -54,13 +54,13 @@
     "message": "Claro"
   },
   "openNewTab": {
-    "message": "Abrir ligazón en nova lapela:"
+    "message": "Abrir ligazón en nova lapela"
   },
   "optionsTitle": {
     "message": "Axustes de Reading List"
   },
   "pageActionOption": {
-    "message": "Amosar na barra de enderezos:"
+    "message": "Amosar na barra de enderezos"
   },
   "removePage": {
     "message": "Eliminar a páxina de Reading List"
