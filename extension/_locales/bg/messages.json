@@ -62,6 +62,9 @@
   "pageActionOption": {
     "message": "Показване в адресната лента:"
   },
+  "removePage": {
+    "message": "Премахване на страницата от „Списък за четене“"
+  },
   "search": {
     "message": "Търсене"
   },

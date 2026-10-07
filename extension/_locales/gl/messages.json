@@ -62,6 +62,9 @@
   "pageActionOption": {
     "message": "Amosar na barra de enderezos:"
   },
+  "removePage": {
+    "message": "Eliminar a páxina de Reading List"
+  },
   "search": {
     "message": "Busca"
   },

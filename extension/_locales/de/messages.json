@@ -62,6 +62,9 @@
   "pageActionOption": {
     "message": "Im Adressleiste anzeigen:"
   },
+  "removePage": {
+    "message": "Seite aus der Leseliste entfernen"
+  },
   "search": {
     "message": "Suchbegriff"
   },

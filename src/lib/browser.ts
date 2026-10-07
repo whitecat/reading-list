@@ -31,11 +31,30 @@ export async function openLink(url: string, newTab: boolean) {
   if (document.body.classList.contains('popup-page')) window.close();
 }
 
+const PAGE_ACTION_ICON = {
+  16: 'icons/icon16.png',
+  32: 'icons/icon32.png',
+};
+const PAGE_ACTION_ICON_SAVED = {
+  16: 'icons/icon16-saved.png',
+  32: 'icons/icon32-saved.png',
+};
+
 export async function syncBadgeForTab(tabId: number, url?: string) {
   const onList = url
     ? (await rl.getListItems()).some((item) => item.url === url)
     : false;
   await chrome.action.setBadgeText({ tabId, text: onList ? '✔' : '' });
+  if (chrome.pageAction) {
+    chrome.pageAction.setTitle({
+      tabId,
+      title: message(onList ? 'removePage' : 'addPage'),
+    });
+    chrome.pageAction.setIcon({
+      tabId,
+      path: onList ? PAGE_ACTION_ICON_SAVED : PAGE_ACTION_ICON,
+    });
+  }
 }
 
 export async function syncBadgeForActiveTab() {

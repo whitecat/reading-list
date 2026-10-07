@@ -6,7 +6,7 @@ import {
   updateSettings,
   onSettingsChanged,
 } from '../lib/settings.js';
-import { message } from '../lib/browser.js';
+import { isFirefox, message } from '../lib/browser.js';
 import { getStorageDiagnostics } from '../lib/storage/diagnostics.js';
 import { readItemsWithoutWriting } from '../lib/storage/load.js';
 import { getLocalBackup } from '../lib/storage/local-backup.js';
@@ -16,14 +16,24 @@ import { styles } from '../styles/options.styles.js';
 import { theme } from '../styles/theme.styles.js';
 import { reset } from '../styles/reset.styles.js';
 
-type CheckboxSettingKey = 'openNewTab' | 'animateItems' | 'addContextMenu';
+type CheckboxSettingKey =
+  'openNewTab' | 'animateItems' | 'addContextMenu' | 'addPageAction';
 
-const CHECKBOX_SETTINGS: { key: CheckboxSettingKey; label: string }[] = [
+const CHECKBOX_SETTINGS: {
+  key: CheckboxSettingKey;
+  label: string;
+  firefoxOnly?: boolean;
+}[] = [
   { key: 'openNewTab', label: 'Open items in new tab by default' },
   { key: 'animateItems', label: 'Animate items' },
   {
     key: 'addContextMenu',
     label: 'Show "Add to Reading List" in the right-click menu',
+  },
+  {
+    key: 'addPageAction',
+    label: 'Show a button in the address bar',
+    firefoxOnly: true,
   },
 ];
 
@@ -34,6 +44,7 @@ export class ReadingListOptions extends LitElement {
     openNewTab: false,
     animateItems: true,
     addContextMenu: true,
+    addPageAction: true,
   };
 
   @state() private _diagnostics = '';
@@ -51,6 +62,7 @@ export class ReadingListOptions extends LitElement {
         openNewTab: settings.openNewTab,
         animateItems: settings.animateItems,
         addContextMenu: settings.addContextMenu,
+        addPageAction: settings.addPageAction,
       };
     });
   }
@@ -67,7 +79,9 @@ export class ReadingListOptions extends LitElement {
 
       <div class="section">
         <h3>Default Behavior</h3>
-        ${CHECKBOX_SETTINGS.map(
+        ${CHECKBOX_SETTINGS.filter(
+          ({ firefoxOnly }) => !firefoxOnly || isFirefox,
+        ).map(
           ({ key, label }) => html`
             <div class="option">
               <input
@@ -134,6 +148,7 @@ export class ReadingListOptions extends LitElement {
       openNewTab: settings.openNewTab,
       animateItems: settings.animateItems,
       addContextMenu: settings.addContextMenu,
+      addPageAction: settings.addPageAction,
     };
   }
 

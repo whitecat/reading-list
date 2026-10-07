@@ -62,6 +62,9 @@
   "pageActionOption": {
     "message": "Mostra nella barra degli indirizzi:"
   },
+  "removePage": {
+    "message": "Rimuovere la pagina dall'Elenco Lettura"
+  },
   "search": {
     "message": "Cerca"
   },

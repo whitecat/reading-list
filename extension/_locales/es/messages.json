@@ -62,6 +62,9 @@
   "pageActionOption": {
     "message": "Mostrar en la barra de direcciones:"
   },
+  "removePage": {
+    "message": "Quitar página de la lista de lectura"
+  },
   "search": {
     "message": "Buscar"
   },

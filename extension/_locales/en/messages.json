@@ -83,6 +83,10 @@
     "message": "Show in address bar:",
     "description": "The label for the address bar option."
   },
+  "removePage": {
+    "message": "Remove page from Reading List",
+    "description": "The title of the address bar button when the page is already on the list."
+  },
   "search": {
     "message": "Search",
     "description": "The label for the search box."

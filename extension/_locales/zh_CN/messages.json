@@ -62,6 +62,9 @@
   "pageActionOption": {
     "message": "在地址栏中显示:"
   },
+  "removePage": {
+    "message": "从阅读列表中移除页面"
+  },
   "search": {
     "message": "搜索"
   },
