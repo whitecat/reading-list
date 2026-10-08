@@ -23,7 +23,7 @@ import {
 import { icon } from '../lib/icon.js';
 import { designTokens, resolvedTheme } from '../lib/design-tokens.js';
 import { i18n } from '../lib/i18n.js';
-import { rl, ListItemData } from '../lib/rl.js';
+import { rl, ListItemData, sameItem } from '../lib/rl.js';
 import {
   DEFAULT_SETTINGS,
   ReadingListSettings,
@@ -853,22 +853,19 @@ export class ReadingListAppElement extends LitElement {
     }
   }
   private onStorageChanged = (
-    _changes: Record<string, chrome.storage.StorageChange>,
+    changes: Record<string, chrome.storage.StorageChange>,
     area: string,
   ) => {
-    if (
-      area !== 'sync' &&
-      !(
-        area === 'local' &&
-        Object.keys(_changes).some(
-          (key) =>
-            key.startsWith('rl:v1:item:') ||
-            key.startsWith('rl:v1:deleted:') ||
-            key === 'rl:v1:settings',
-        )
-      )
-    )
-      return;
+    const listChanged = Object.entries(changes).some(
+      ([key, change]) =>
+        (area === 'sync' ||
+          (area === 'local' &&
+            (key.startsWith('rl:v1:item:') ||
+              key.startsWith('rl:v1:deleted:') ||
+              key === 'rl:v1:settings'))) &&
+        !sameItem(change.oldValue, change.newValue),
+    );
+    if (!listChanged) return;
     if (this.refreshTimer) clearTimeout(this.refreshTimer);
     this.refreshTimer = window.setTimeout(() => {
       this.refreshTimer = null;

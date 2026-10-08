@@ -154,17 +154,59 @@ test('local item changes refresh an open sidebar', async () => {
     refreshes++;
     return original.apply(rl, args);
   };
-  storageListener({ 'rl:v1:item:https://example.com/a': {} }, 'local');
-  storageListener({ 'rl:v1:deleted:https://example.com/a': {} }, 'local');
-  storageListener({ 'rl:v1:settings': {} }, 'local');
-  storageListener({ unrelated: {} }, 'local');
+  const changed = { oldValue: { title: 'Old' }, newValue: { title: 'New' } };
+  storageListener({ 'rl:v1:item:https://example.com/a': changed }, 'local');
+  storageListener(
+    { 'rl:v1:deleted:https://example.com/a': { newValue: 1 } },
+    'local',
+  );
+  storageListener({ 'rl:v1:settings': changed }, 'local');
+  storageListener({ unrelated: changed }, 'local');
   await new Promise((resolve) => setTimeout(resolve, 250));
   assert.equal(refreshes, 1);
-  storageListener({ 'rl:v1:item:https://example.com/a': {} }, 'local');
+  storageListener({ 'rl:v1:item:https://example.com/a': changed }, 'local');
   await new Promise((resolve) => setTimeout(resolve, 250));
   assert.equal(refreshes, 2);
-  storageListener({ unrelated: {} }, 'local');
+  storageListener({ unrelated: changed }, 'local');
   await new Promise((resolve) => setTimeout(resolve, 250));
   assert.equal(refreshes, 2);
+  rl.refresh = original;
+});
+
+test('unchanged writes do not refresh, so Firefox cannot loop', async () => {
+  document.body.className = 'sidebar-page';
+  await mount();
+  let refreshes = 0;
+  const original = rl.refresh;
+  rl.refresh = async (...args) => {
+    refreshes++;
+    return original.apply(rl, args);
+  };
+  const item = { url: 'https://example.com/a', title: 'Same', addedAt: 1 };
+  const reordered = { addedAt: 1, title: 'Same', url: 'https://example.com/a' };
+  storageListener(
+    {
+      'rl:v1:item:https://example.com/a': {
+        oldValue: item,
+        newValue: reordered,
+      },
+    },
+    'local',
+  );
+  storageListener(
+    {
+      'rl:v1:settings': {
+        oldValue: { theme: 'light' },
+        newValue: { theme: 'light' },
+      },
+    },
+    'local',
+  );
+  storageListener(
+    { 'https://example.com/a': { oldValue: item, newValue: item } },
+    'sync',
+  );
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  assert.equal(refreshes, 0);
   rl.refresh = original;
 });
