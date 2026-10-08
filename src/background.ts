@@ -119,7 +119,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     }
     if (!tab.url) return;
     await syncBadgeForTab(tabId, tab.url).catch(console.error);
-    if (navigated) await markViewed(tab.url);
+    if (navigated && tab.active) await markViewed(tab.url);
   } catch (e) {
     console.error(e);
   }
