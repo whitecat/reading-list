@@ -45,7 +45,7 @@ const CONFLICT_PREFIX = 'rl:v1:conflict:';
 const SETTINGS_KEY = 'rl:v1:settings';
 const SETTINGS_SHADOW_KEY = 'rl:v1:settings-shadow';
 
-function sameItem(a: unknown, b: unknown): boolean {
+export function sameItem(a: unknown, b: unknown): boolean {
   const canonical = (value: unknown): unknown => {
     if (Array.isArray(value)) return value.map(canonical);
     if (value && typeof value === 'object') {
@@ -95,9 +95,10 @@ export class RL {
       const remoteSettings = normalizeSettings(synced.settings, true);
       const currentSettings = local[SETTINGS_KEY];
       const settingsShadow = local[SETTINGS_SHADOW_KEY];
-      if (!currentSettings ||
+      if ((!currentSettings ||
         (settingsShadow && sameItem(currentSettings, settingsShadow)) ||
-        (!settingsShadow && sameItem(currentSettings, DEFAULT_SETTINGS))) {
+        (!settingsShadow && sameItem(currentSettings, DEFAULT_SETTINGS))) &&
+        !sameItem(currentSettings, remoteSettings)) {
         await chrome.storage.local.set({ [SETTINGS_KEY]: remoteSettings });
       }
       await chrome.storage.local.set({ [SETTINGS_SHADOW_KEY]: remoteSettings });
@@ -116,7 +117,9 @@ export class RL {
       if (!deletedAt) {
         if (!current || (shadow && sameItem(current, shadow))) {
           // A migration/reconciliation is complete only after the copy succeeds.
-          await chrome.storage.local.set({ [ITEM_PREFIX + item.url]: item });
+          if (!current || !sameItem(current, item)) {
+            await chrome.storage.local.set({ [ITEM_PREFIX + item.url]: item });
+          }
           items.set(item.url, item);
         } else if (current && !sameItem(current, item) &&
           (!shadow || !sameItem(item, shadow))) {

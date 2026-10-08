@@ -687,5 +687,13 @@
   "openAction": {
     "message": "Open",
     "description": "Short action label in the Settings sheet."
+  },
+  "openSidebar": {
+    "message": "Open sidebar",
+    "description": "Accessible label for the Sidebar button."
+  },
+  "sidebar": {
+    "message": "Sidebar",
+    "description": "Popup header button that opens the sidebar or side panel."
   }
 }

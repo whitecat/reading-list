@@ -314,3 +314,22 @@ test('drag reorder writes one manual order while retaining item metadata', async
   assert.equal(local.values[`rl:v1:item:${url}`].viewed, true);
   assert.equal(sync.values[url].index, 3);
 });
+
+test('reloading an unchanged synced list writes no item or settings keys', async () => {
+  const local = memoryArea();
+  const sync = memoryArea({ [url]: legacy, settings: { theme: 'dark' } });
+  globalThis.chrome = { storage: { local, sync } };
+  await new RL().getListItems();
+
+  const written = [];
+  const set = local.set.bind(local);
+  local.set = async (entries) => {
+    written.push(...Object.keys(entries));
+    return set(entries);
+  };
+  await new RL().getListItems();
+  assert.deepEqual(
+    written.filter((key) => key.startsWith('rl:v1:item:') || key === 'rl:v1:settings'),
+    [],
+  );
+});

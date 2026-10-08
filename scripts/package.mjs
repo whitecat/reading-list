@@ -8,10 +8,10 @@ const distDir = resolve(root, 'dist');
 const unpackedDir = resolve(distDir, 'unpacked');
 
 const removals = {
-  chrome: ['browser_specific_settings', 'background.scripts'],
-  edge: ['browser_specific_settings', 'background.scripts'],
-  opera: ['browser_specific_settings', 'background.scripts'],
-  firefox: ['minimum_chrome_version', 'background.service_worker'],
+  chrome: ['browser_specific_settings', 'background.scripts', 'sidebar_action'],
+  edge: ['browser_specific_settings', 'background.scripts', 'sidebar_action'],
+  opera: ['browser_specific_settings', 'background.scripts', 'side_panel', 'permissions[sidePanel]'],
+  firefox: ['minimum_chrome_version', 'background.service_worker', 'side_panel', 'permissions[sidePanel]'],
 };
 
 const targets = Object.keys(removals);

@@ -77,5 +77,11 @@
   },
   "unreadButton": {
     "message": "sen ler"
+  },
+  "openSidebar": {
+    "message": "Abrir a barra lateral"
+  },
+  "sidebar": {
+    "message": "Barra lateral"
   }
 }
