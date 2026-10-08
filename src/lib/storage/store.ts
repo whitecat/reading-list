@@ -30,6 +30,9 @@ export interface ItemStore {
   afterLoad(data: SyncData): void;
 }
 
+export const isSavableUrl = (url?: string): url is string =>
+  !!url && /^https?:\/\//i.test(url);
+
 export class StorageFullError extends Error {
   override name = 'StorageFullError';
 }

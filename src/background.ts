@@ -1,6 +1,7 @@
 import { rl } from './lib/rl.js';
 import { getSettings } from './lib/settings.js';
 import { addPage, message, syncBadgeForTab } from './lib/browser.js';
+import { isSavableUrl } from './lib/storage/store.js';
 
 const ADD_PAGE_MENU = 'add-page-to-reading-list';
 const ADD_LINK_MENU = 'add-link-to-reading-list';
@@ -23,26 +24,32 @@ async function syncContextMenu() {
   });
 }
 
-function isSavableUrl(url?: string): url is string {
-  return !!url && /^https?:\/\//i.test(url);
-}
-
-function setPageActionVisible(
+async function setPageActionVisible(
   tabId: number,
   url: string | undefined,
   enabled: boolean,
 ) {
-  if (enabled && isSavableUrl(url)) chrome.pageAction.show(tabId);
-  else chrome.pageAction.hide(tabId);
+  try {
+    await (enabled && isSavableUrl(url)
+      ? chrome.pageAction.show(tabId)
+      : chrome.pageAction.hide(tabId));
+  } catch (e) {
+    console.error(e);
+  }
 }
+
+const loadPageActionEnabled = async () => (await getSettings()).addPageAction;
+
+let pageActionEnabled = loadPageActionEnabled();
 
 async function syncPageActions() {
   if (!chrome.pageAction) return;
-  const { addPageAction } = await getSettings();
+  pageActionEnabled = loadPageActionEnabled();
+  const addPageAction = await pageActionEnabled;
   const tabs = await chrome.tabs.query({});
   for (const tab of tabs) {
     if (tab.id !== undefined)
-      setPageActionVisible(tab.id, tab.url, addPageAction);
+      await setPageActionVisible(tab.id, tab.url, addPageAction);
   }
 }
 
@@ -50,6 +57,8 @@ function syncSettingsDrivenUi() {
   void syncContextMenu();
   void syncPageActions();
 }
+
+syncPageActions().catch(console.error);
 
 chrome.runtime.onInstalled.addListener(syncSettingsDrivenUi);
 chrome.runtime.onStartup.addListener(syncSettingsDrivenUi);
@@ -64,9 +73,12 @@ chrome.pageAction?.onClicked.addListener(async (tab) => {
     const onList = (await rl.getListItems()).some(
       (item) => item.url === tab.url,
     );
-    if (onList) await rl.removeReadingItem(tab.url);
-    else await addPage(tab.url, tab.title || tab.url, tab.favIconUrl);
-    await syncBadgeForTab(tab.id, tab.url);
+    if (onList) {
+      await rl.removeReadingItem(tab.url);
+      await syncBadgeForTab(tab.id, tab.url);
+    } else {
+      await addPage(tab.url, tab.title || tab.url, tab.favIconUrl);
+    }
   } catch (e) {
     console.error(e);
   }
@@ -87,18 +99,28 @@ async function markViewed(url: string) {
 }
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
-  const tab = await chrome.tabs.get(tabId);
-  if (!tab.url) return;
-  await syncBadgeForTab(tabId, tab.url);
-  await markViewed(tab.url);
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    if (!tab.url) return;
+    await syncBadgeForTab(tabId, tab.url).catch(console.error);
+    await markViewed(tab.url);
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (chrome.pageAction) {
-    const { addPageAction } = await getSettings();
-    setPageActionVisible(tabId, tab.url, addPageAction);
+  const navigated = !!changeInfo.url;
+  const completed = changeInfo.status === 'complete';
+  if (!navigated && !completed) return;
+  try {
+    if (chrome.pageAction) {
+      await setPageActionVisible(tabId, tab.url, await pageActionEnabled);
+    }
+    if (!tab.url) return;
+    await syncBadgeForTab(tabId, tab.url).catch(console.error);
+    if (navigated) await markViewed(tab.url);
+  } catch (e) {
+    console.error(e);
   }
-  if (!tab.url) return;
-  if (changeInfo.status === 'complete') await syncBadgeForTab(tabId, tab.url);
-  if (changeInfo.url) await markViewed(tab.url);
 });

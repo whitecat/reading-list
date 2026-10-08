@@ -49,14 +49,16 @@ export async function syncBadgeForTab(tabId: number, url?: string) {
     : false;
   await chrome.action.setBadgeText({ tabId, text: onList ? '✔' : '' });
   if (chrome.pageAction) {
-    chrome.pageAction.setTitle({
-      tabId,
-      title: message(onList ? 'removePage' : 'addPage'),
-    });
-    chrome.pageAction.setIcon({
-      tabId,
-      path: onList ? PAGE_ACTION_ICON_SAVED : PAGE_ACTION_ICON,
-    });
+    await Promise.all([
+      chrome.pageAction.setTitle({
+        tabId,
+        title: message(onList ? 'removePage' : 'addPage'),
+      }),
+      chrome.pageAction.setIcon({
+        tabId,
+        path: onList ? PAGE_ACTION_ICON_SAVED : PAGE_ACTION_ICON,
+      }),
+    ]);
   }
 }
 
@@ -76,6 +78,6 @@ export async function addPage(
     addedAt: Date.now(),
     favIconUrl,
   });
-  void syncBadgeForActiveTab();
+  syncBadgeForActiveTab().catch(console.error);
   return stored;
 }
