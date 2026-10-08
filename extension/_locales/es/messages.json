@@ -20,14 +20,11 @@
   "appName": {
     "message": "Lista de lectura"
   },
-  "backup": {
-    "message": "Copia de seguridad:"
-  },
   "backupRestore": {
     "message": "Copia de seguridad y restauración"
   },
   "clearData": {
-    "message": "Borrar la lista de lectura"
+    "message": "Borrar Lista de lectura"
   },
   "confirmMsg": {
     "message": "Estás a punto de eliminar todo el contenido de la lista de lectura. ¿Estás seguro?"
@@ -41,17 +38,14 @@
   "copyToClipboard": {
     "message": "Copiar al portapapeles"
   },
-  "dark": {
-    "message": "oscuro"
-  },
   "dateButton": {
     "message": "fecha"
   },
   "defaultBehavior": {
     "message": "Comportamiento predeterminado"
   },
-  "deleteAll": {
-    "message": "Eliminar todo!"
+  "deleteItem": {
+    "message": "Eliminar"
   },
   "diagnosticsFailed": {
     "message": "Falló el propio diagnóstico del almacenamiento: $ERROR$",
@@ -67,11 +61,11 @@
   "downloadLocalBackup": {
     "message": "Descargar copia de seguridad local"
   },
+  "editTitle": {
+    "message": "Editar título"
+  },
   "export": {
     "message": "Exportar"
-  },
-  "goBack": {
-    "message": "Regresar"
   },
   "import": {
     "message": "Importar"
@@ -125,14 +119,20 @@
       }
     }
   },
-  "light": {
-    "message": "claro"
+  "loadFailed": {
+    "message": "No se pudo convertir tu lista de lectura al nuevo formato. Tus páginas guardadas siguen a salvo: abre Opciones (el icono del engranaje de arriba) → Opciones avanzadas para descargar una copia de seguridad."
   },
   "noLocalBackup": {
     "message": "Todavía no hay ninguna copia de seguridad local. Se guarda una automáticamente antes de que la extensión migre datos de una versión anterior."
   },
   "openNewTab": {
     "message": "Abrir enlace en una nueva pestaña"
+  },
+  "openSidebar": {
+    "message": "Abrir barra lateral"
+  },
+  "options": {
+    "message": "Opciones"
   },
   "optionsTitle": {
     "message": "Opciones para la lista de lectura"
@@ -143,14 +143,20 @@
   "removePage": {
     "message": "Quitar página de la lista de lectura"
   },
+  "reviewRequest": {
+    "message": "¿Te gusta la lista de lectura? ¡Déjanos una reseña!"
+  },
   "search": {
     "message": "Buscar"
+  },
+  "sidebar": {
+    "message": "Barra lateral"
   },
   "storageDiagnostics": {
     "message": "Diagnóstico del almacenamiento"
   },
-  "theme": {
-    "message": "Tema:"
+  "syncFailed": {
+    "message": "No se pudo guardar el cambio. Puede que tu lista esté llena; prueba a eliminar algunas páginas."
   },
   "titleButton": {
     "message": "título"

@@ -1,12 +1,12 @@
 {
   "addLink": {
-    "message": "Engadir unha ligazón a Reading List"
+    "message": "Engadir unha ligazón á Lista de lectura"
   },
   "addPage": {
-    "message": "Engadir unha páxina a Reading List"
+    "message": "Engadir unha páxina á Lista de lectura"
   },
   "advancedOptions": {
-    "message": "Axustes avanazados"
+    "message": "Axustes avanzados"
   },
   "allButton": {
     "message": "todo"
@@ -18,19 +18,16 @@
     "message": "Esta extensión garda unha lista das ligazóns a páxinas para ler máis tarde."
   },
   "appName": {
-    "message": "Reading List"
-  },
-  "backup": {
-    "message": "Respaldo:"
+    "message": "Lista de lectura"
   },
   "backupRestore": {
     "message": "Copia de seguranza e restauración"
   },
   "clearData": {
-    "message": "Limpar Reading List"
+    "message": "Limpar Lista de lectura"
   },
   "confirmMsg": {
-    "message": "Vai borrar todo o contido la lista de lectura. Está seguro?"
+    "message": "Vai borrar todo o contido da lista de lectura. Está seguro?"
   },
   "context": {
     "message": "Mostrar no menú contextual"
@@ -41,17 +38,14 @@
   "copyToClipboard": {
     "message": "Copiar no portapapeis"
   },
-  "dark": {
-    "message": "Oscuro"
-  },
   "dateButton": {
     "message": "data"
   },
   "defaultBehavior": {
     "message": "Comportamento predeterminado"
   },
-  "deleteAll": {
-    "message": "Quita todo!"
+  "deleteItem": {
+    "message": "Eliminar"
   },
   "diagnosticsFailed": {
     "message": "Fallou o propio diagnóstico do almacenamento: $ERROR$",
@@ -67,11 +61,11 @@
   "downloadLocalBackup": {
     "message": "Descargar copia de seguranza local"
   },
+  "editTitle": {
+    "message": "Editar o título"
+  },
   "export": {
     "message": "Exportar"
-  },
-  "goBack": {
-    "message": "Atrás"
   },
   "import": {
     "message": "Importar"
@@ -125,8 +119,8 @@
       }
     }
   },
-  "light": {
-    "message": "Claro"
+  "loadFailed": {
+    "message": "Non se puido converter a súa lista de lectura ao novo formato. As súas páxinas gardadas seguen a salvo: abra Opcións (a icona da roda dentada de arriba) → Axustes avanzados para descargar unha copia de seguranza."
   },
   "noLocalBackup": {
     "message": "Aínda non hai ningunha copia de seguranza local. Gárdase unha automaticamente antes de que a extensión migre datos dunha versión anterior."
@@ -134,23 +128,35 @@
   "openNewTab": {
     "message": "Abrir ligazón en nova lapela"
   },
+  "openSidebar": {
+    "message": "Abrir a barra lateral"
+  },
+  "options": {
+    "message": "Opcións"
+  },
   "optionsTitle": {
-    "message": "Axustes de Reading List"
+    "message": "Axustes da Lista de lectura"
   },
   "pageActionOption": {
     "message": "Amosar na barra de enderezos"
   },
   "removePage": {
-    "message": "Eliminar a páxina de Reading List"
+    "message": "Eliminar a páxina da Lista de lectura"
+  },
+  "reviewRequest": {
+    "message": "Gústalle a lista de lectura? Déixenos unha valoración!"
   },
   "search": {
     "message": "Busca"
   },
+  "sidebar": {
+    "message": "Barra lateral"
+  },
   "storageDiagnostics": {
     "message": "Diagnóstico do almacenamento"
   },
-  "theme": {
-    "message": "Decorado:"
+  "syncFailed": {
+    "message": "Non se puido gardar o cambio. Pode que a súa lista estea chea; probe a eliminar algunhas páxinas."
   },
   "titleButton": {
     "message": "título"

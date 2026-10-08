@@ -20,14 +20,11 @@
   "appName": {
     "message": "Elenco Lettura"
   },
-  "backup": {
-    "message": "Backup:"
-  },
   "backupRestore": {
     "message": "Backup e ripristino"
   },
   "clearData": {
-    "message": "Ripristinare Elenco Lettura"
+    "message": "Svuota Elenco Lettura"
   },
   "confirmMsg": {
     "message": "Stai per eliminare tutti i contenuti della lista di lettura. Sei sicuro?"
@@ -41,17 +38,14 @@
   "copyToClipboard": {
     "message": "Copia negli appunti"
   },
-  "dark": {
-    "message": "scuro"
-  },
   "dateButton": {
     "message": "data"
   },
   "defaultBehavior": {
     "message": "Comportamento predefinito"
   },
-  "deleteAll": {
-    "message": "Eliminare tutto!"
+  "deleteItem": {
+    "message": "Elimina"
   },
   "diagnosticsFailed": {
     "message": "La diagnostica dell'archiviazione è fallita: $ERROR$",
@@ -67,11 +61,11 @@
   "downloadLocalBackup": {
     "message": "Scarica backup locale"
   },
+  "editTitle": {
+    "message": "Modifica titolo"
+  },
   "export": {
     "message": "Esportare"
-  },
-  "goBack": {
-    "message": "Tornare indietro"
   },
   "import": {
     "message": "Importare"
@@ -125,14 +119,20 @@
       }
     }
   },
-  "light": {
-    "message": "luce"
+  "loadFailed": {
+    "message": "La conversione dell'elenco di lettura nel nuovo formato non è riuscita. Le pagine salvate sono ancora al sicuro: apri Opzioni (l'icona dell'ingranaggio in alto) → Opzioni avanzate per scaricare un backup."
   },
   "noLocalBackup": {
     "message": "Nessun backup locale trovato. Ne viene salvato uno automaticamente prima che l'estensione migri i dati da una versione precedente."
   },
   "openNewTab": {
     "message": "Aprire il link in una nuova scheda"
+  },
+  "openSidebar": {
+    "message": "Apri la barra laterale"
+  },
+  "options": {
+    "message": "Opzioni"
   },
   "optionsTitle": {
     "message": "Opzioni dell'Elenco Lettura"
@@ -143,14 +143,20 @@
   "removePage": {
     "message": "Rimuovere la pagina dall'Elenco Lettura"
   },
+  "reviewRequest": {
+    "message": "Ti piace l'Elenco Lettura? Lasciaci una recensione!"
+  },
   "search": {
     "message": "Cerca"
+  },
+  "sidebar": {
+    "message": "Barra laterale"
   },
   "storageDiagnostics": {
     "message": "Diagnostica archiviazione"
   },
-  "theme": {
-    "message": "Tema:"
+  "syncFailed": {
+    "message": "Impossibile salvare la modifica. L'elenco potrebbe essere pieno: prova a rimuovere alcune pagine."
   },
   "titleButton": {
     "message": "titulo"

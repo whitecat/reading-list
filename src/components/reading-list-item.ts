@@ -2,7 +2,7 @@ import { LitElement, html, PropertyValues } from 'lit';
 import { animate } from '@lit-labs/motion';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { getSettings } from '../lib/settings.js';
-import { isFirefox, openLink } from '../lib/browser.js';
+import { isFirefox, message, openLink } from '../lib/browser.js';
 import { styles } from '../styles/item.styles.js';
 import { theme } from '../styles/theme.styles.js';
 import { reset } from '../styles/reset.styles.js';
@@ -142,7 +142,7 @@ export class ReadingListItemElement extends LitElement {
             ? ''
             : html`<button
                 class="edit-button"
-                aria-label="Edit title"
+                aria-label=${message('editTitle')}
                 @mousedown=${(e: Event) => e.preventDefault()}
                 @click=${this._onEditClick}
               >
@@ -151,7 +151,11 @@ export class ReadingListItemElement extends LitElement {
                 >
               </button>`
         }
-        <button class="delete-button" @click=${() => this._emit('delete-item')}>
+        <button
+          class="delete-button"
+          aria-label=${message('deleteItem')}
+          @click=${() => this._emit('delete-item')}
+        >
           <span class="delete-button-content">&times;</span>
         </button>
       </div>

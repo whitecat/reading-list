@@ -121,7 +121,7 @@ export class ReadingListAppElement extends LitElement {
       this._listItems = items;
       if (items.length >= REVIEW_AFTER_ITEM_COUNT && !settings.askedForReview) {
         this._reviewItem = {
-          title: 'Like the Reading List? Give us a review!',
+          title: message('reviewRequest'),
           url: REVIEW_URL,
           addedAt: Date.now(),
           favIconUrl: chrome.runtime.getURL('icons/icon48.png'),
@@ -271,16 +271,16 @@ export class ReadingListAppElement extends LitElement {
             !isSidebar && (hasFirefoxSidebar() || hasSidePanel())
               ? html`<button
                   class="sidebar-button"
-                  aria-label="Open sidebar"
+                  aria-label=${message('openSidebar')}
                   @click=${this._onSidebarClick}
                 >
-                  Sidebar
+                  ${message('sidebar')}
                 </button>`
               : html`<span></span>`
           }
           <button
             class="settings-button"
-            aria-label="Options"
+            aria-label=${message('options')}
             @click=${() => chrome.runtime.openOptionsPage()}
           >
             &#9881;

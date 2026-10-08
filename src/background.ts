@@ -94,6 +94,15 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   added?.catch(console.error);
 });
 
+async function syncBadgeForActiveTabs() {
+  const tabs = await chrome.tabs.query({ active: true });
+  await Promise.all(
+    tabs.map((tab) => tab.id !== undefined && syncBadgeForTab(tab.id, tab.url)),
+  );
+}
+
+rl.subscribe(() => void syncBadgeForActiveTabs().catch(console.error));
+
 async function markViewed(url: string) {
   await rl.updateReadingItem(url, { viewed: true });
 }
@@ -119,7 +128,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     }
     if (!tab.url) return;
     await syncBadgeForTab(tabId, tab.url).catch(console.error);
-    if (navigated) await markViewed(tab.url);
+    if (navigated && tab.active) await markViewed(tab.url);
   } catch (e) {
     console.error(e);
   }

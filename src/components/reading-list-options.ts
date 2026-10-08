@@ -2,7 +2,9 @@ import { html, LitElement } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { rl } from '../lib/rl.js';
 import {
+  DEFAULT_SETTINGS,
   getSettings,
+  Settings,
   updateSettings,
   onSettingsChanged,
 } from '../lib/settings.js';
@@ -16,29 +18,25 @@ import { styles } from '../styles/options.styles.js';
 import { theme } from '../styles/theme.styles.js';
 import { reset } from '../styles/reset.styles.js';
 
-type CheckboxSettingKey =
-  'openNewTab' | 'animateItems' | 'addContextMenu' | 'addPageAction';
-
-const CHECKBOX_SETTINGS: {
-  key: CheckboxSettingKey;
-  labelKey: string;
-  firefoxOnly?: boolean;
-}[] = [
-  { key: 'openNewTab', labelKey: 'openNewTab' },
-  { key: 'animateItems', labelKey: 'animation' },
-  { key: 'addContextMenu', labelKey: 'context' },
+const CHECKBOX_SETTINGS = [
+  { key: 'openNewTab', labelKey: 'openNewTab', firefoxOnly: false },
+  { key: 'animateItems', labelKey: 'animation', firefoxOnly: false },
+  { key: 'addContextMenu', labelKey: 'context', firefoxOnly: false },
   { key: 'addPageAction', labelKey: 'pageActionOption', firefoxOnly: true },
-];
+] as const;
+
+type CheckboxSettingKey = (typeof CHECKBOX_SETTINGS)[number]['key'];
+
+function checkboxValues(settings: Required<Settings>) {
+  return Object.fromEntries(
+    CHECKBOX_SETTINGS.map(({ key }) => [key, settings[key]]),
+  ) as Record<CheckboxSettingKey, boolean>;
+}
 
 export class ReadingListOptions extends LitElement {
   static override styles = [theme, reset, styles];
 
-  @state() settings: Record<CheckboxSettingKey, boolean> = {
-    openNewTab: false,
-    animateItems: true,
-    addContextMenu: true,
-    addPageAction: true,
-  };
+  @state() settings = checkboxValues(DEFAULT_SETTINGS);
 
   @state() private _diagnostics = '';
   @state() private _diagnosticsCopied = false;
@@ -52,12 +50,7 @@ export class ReadingListOptions extends LitElement {
     void this._loadSettings();
     this._unsubscribeSettings?.();
     this._unsubscribeSettings = onSettingsChanged((settings) => {
-      this.settings = {
-        openNewTab: settings.openNewTab,
-        animateItems: settings.animateItems,
-        addContextMenu: settings.addContextMenu,
-        addPageAction: settings.addPageAction,
-      };
+      this.settings = checkboxValues(settings);
     });
   }
 
@@ -137,12 +130,7 @@ export class ReadingListOptions extends LitElement {
 
   private async _loadSettings() {
     const settings = await getSettings();
-    this.settings = {
-      openNewTab: settings.openNewTab,
-      animateItems: settings.animateItems,
-      addContextMenu: settings.addContextMenu,
-      addPageAction: settings.addPageAction,
-    };
+    this.settings = checkboxValues(settings);
   }
 
   private async _onSettingChange(key: CheckboxSettingKey, e: Event) {

@@ -27,10 +27,6 @@
     "message": "Reading List",
     "description": "The title of the application, displayed in the web store and in the popup’s heading."
   },
-  "backup": {
-    "message": "Backup:",
-    "description": "Label for import and export button."
-  },
   "backupRestore": {
     "message": "Backup & Restore",
     "description": "Heading of the export/import section on the options page."
@@ -55,10 +51,6 @@
     "message": "Copy to Clipboard",
     "description": "Button that copies the storage diagnostics report."
   },
-  "dark": {
-    "message": "Dark",
-    "description": "The name for the dark theme."
-  },
   "dateButton": {
     "message": "date",
     "description": "Button to sort by date."
@@ -67,9 +59,9 @@
     "message": "Default Behavior",
     "description": "Label above the default-behavior checkboxes on the options page."
   },
-  "deleteAll": {
-    "message": "Delete everything!",
-    "description": "Confirm message on clearing data"
+  "deleteItem": {
+    "message": "Delete",
+    "description": "Accessible label for an item's delete (×) button."
   },
   "diagnosticsFailed": {
     "message": "Storage Diagnostics itself failed: $ERROR$",
@@ -88,13 +80,13 @@
     "message": "Download Local Backup",
     "description": "Button that downloads the automatic local backup made before a data migration."
   },
+  "editTitle": {
+    "message": "Edit title",
+    "description": "Accessible label for an item's edit (pencil) button."
+  },
   "export": {
     "message": "Export",
     "description": "Button to Export reading list."
-  },
-  "goBack": {
-    "message": "Go back",
-    "description": "Cancel message on clearning data"
   },
   "import": {
     "message": "Import",
@@ -155,9 +147,9 @@
     },
     "description": "Alert after a partly failed import. $SUCCEEDED$ imported, out of $TOTAL$, $FAILED$ failed."
   },
-  "light": {
-    "message": "Light",
-    "description": "The name for the light theme."
+  "loadFailed": {
+    "message": "Converting your reading list to the new format failed. Your saved pages are still safe in storage — open Options (the gear icon above) → Advanced to download a backup.",
+    "description": "Shown when the initial reading list load fails, e.g. a storage quota error during the one-time migration from the old extension."
   },
   "noLocalBackup": {
     "message": "No local backup found yet. One is saved automatically before the extension migrates data from an older version.",
@@ -166,6 +158,14 @@
   "openNewTab": {
     "message": "Open link in new tab",
     "description": "Label for the option to open a new tab when a link is clicked"
+  },
+  "openSidebar": {
+    "message": "Open sidebar",
+    "description": "Accessible label for the Sidebar button."
+  },
+  "options": {
+    "message": "Options",
+    "description": "Accessible label for the gear button that opens the Options page."
   },
   "optionsTitle": {
     "message": "Reading List Options",
@@ -179,9 +179,17 @@
     "message": "Remove page from Reading List",
     "description": "The title of the address bar button when the page is already on the list."
   },
+  "reviewRequest": {
+    "message": "Like the Reading List? Give us a review!",
+    "description": "Title of the review-request item shown at the top of the list."
+  },
   "search": {
     "message": "Search",
     "description": "The label for the search box."
+  },
+  "sidebar": {
+    "message": "Sidebar",
+    "description": "Popup header button that opens the sidebar or side panel."
   },
   "storageDiagnostics": {
     "message": "Storage Diagnostics",
@@ -190,14 +198,6 @@
   "syncFailed": {
     "message": "Couldn't save that change. Your list may be full, so try removing some pages.",
     "description": "Shown briefly when a reading list write (e.g. reordering) fails to save."
-  },
-  "loadFailed": {
-    "message": "Converting your reading list to the new format failed. Your saved pages are still safe in storage — open Options (the gear icon above) → Advanced to download a backup.",
-    "description": "Shown when the initial reading list load fails, e.g. a storage quota error during the one-time migration from the old extension."
-  },
-  "theme": {
-    "message": "Theme:",
-    "description": "The label for the theme option."
   },
   "titleButton": {
     "message": "title",
