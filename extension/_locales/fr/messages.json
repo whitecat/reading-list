@@ -27,7 +27,7 @@
     "message": "Sauvegarde et restauration"
   },
   "clearData": {
-    "message": "Effacer Liste de Lecture"
+    "message": "Effacer la liste de lecture"
   },
   "confirmMsg": {
     "message": "Vous êtes sur le point de supprimer tout le contenu de la liste de lecture. Êtes-vous sûr?"
@@ -68,7 +68,7 @@
     "message": "Télécharger la sauvegarde locale"
   },
   "export": {
-    "message": "Exportation"
+    "message": "Exporter"
   },
   "goBack": {
     "message": "Retourner"

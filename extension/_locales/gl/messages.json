@@ -6,7 +6,7 @@
     "message": "Engadir unha páxina a Reading List"
   },
   "advancedOptions": {
-    "message": "Axustes avanazados"
+    "message": "Axustes avanzados"
   },
   "allButton": {
     "message": "todo"
@@ -27,7 +27,7 @@
     "message": "Copia de seguranza e restauración"
   },
   "clearData": {
-    "message": "Limpar Reading List"
+    "message": "Limpar a lista de lectura"
   },
   "confirmMsg": {
     "message": "Vai borrar todo o contido la lista de lectura. Está seguro?"
