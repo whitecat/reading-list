@@ -662,5 +662,11 @@
   "openAction": {
     "message": "Apri",
     "description": "Short action label in the Settings sheet."
+  },
+  "openSidebar": {
+    "message": "Apri la barra laterale"
+  },
+  "sidebar": {
+    "message": "Barra laterale"
   }
 }

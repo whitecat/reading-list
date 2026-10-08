@@ -13,6 +13,7 @@ import {
   LoaderCircle,
   Monitor,
   Moon,
+  PanelRight,
   Plus,
   Search,
   Settings,
@@ -40,6 +41,29 @@ type TopNotice = {
   key?: string;
 };
 
+function firefoxSidebarAction() {
+  return (
+    window as unknown as {
+      browser?: { sidebarAction?: { toggle: () => void } };
+    }
+  ).browser?.sidebarAction;
+}
+
+function sidePanelApi() {
+  return (
+    chrome as unknown as {
+      sidePanel?: { open: (options: { windowId: number }) => Promise<void> };
+    }
+  )?.sidePanel;
+}
+
+function hasSidebar(): boolean {
+  return (
+    firefoxSidebarAction() !== undefined ||
+    typeof sidePanelApi()?.open === 'function'
+  );
+}
+
 @customElement('reading-list-app')
 export class ReadingListAppElement extends LitElement {
   static override styles = [
@@ -54,6 +78,11 @@ export class ReadingListAppElement extends LitElement {
         height: 520px;
         max-height: 600px;
         overflow: hidden;
+      }
+      :host([sidebar]) {
+        width: 100%;
+        height: 100vh;
+        max-height: none;
       }
       header {
         flex: none;
@@ -389,21 +418,31 @@ export class ReadingListAppElement extends LitElement {
       }
       .footer-end {
         position: relative;
-        flex: 0 0 32px;
-        width: 32px;
+        flex: none;
+        display: flex;
+        justify-content: flex-end;
+        gap: 4px;
         height: 32px;
         margin-left: auto;
       }
-      .footer-end .close-search,
-      .footer-end .settings-toggle {
-        position: absolute;
-        inset: 0;
+      footer.search-active .footer-end {
+        width: 32px;
       }
+      .footer-end .footer-button {
+        flex: none;
+      }
+      .footer-end .close-search {
+        position: absolute;
+        inset: 0 0 0 auto;
+        width: 32px;
+      }
+      .sidebar-toggle,
       .settings-toggle {
         transition:
           opacity var(--motion-smooth) ease,
           transform var(--motion-smooth) ease;
       }
+      footer.search-active .sidebar-toggle,
       footer.search-active .settings-toggle {
         opacity: 0;
         transform: translateY(8px);
@@ -691,11 +730,22 @@ export class ReadingListAppElement extends LitElement {
   private infoCloseTimer: number | null = null;
   private reordering = false;
   private themeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+  private windowId?: number;
+  private get inSidebarPage() {
+    return document.body.classList.contains('sidebar-page');
+  }
 
   override connectedCallback() {
     super.connectedCallback();
     document.documentElement.lang = i18n.language();
     document.title = i18n.getMessage('appName');
+    this.toggleAttribute('sidebar', this.inSidebarPage);
+    if (typeof sidePanelApi()?.open === 'function') {
+      chrome.windows
+        .getCurrent()
+        .then((win) => (this.windowId = win.id))
+        .catch(console.error);
+    }
     chrome.storage.onChanged.addListener(this.onStorageChanged);
     this.addEventListener('keydown', this.onKeydown);
     document.addEventListener('keydown', this.onSaveShortcut);
@@ -806,7 +856,19 @@ export class ReadingListAppElement extends LitElement {
     _changes: Record<string, chrome.storage.StorageChange>,
     area: string,
   ) => {
-    if (area !== 'sync') return;
+    if (
+      area !== 'sync' &&
+      !(
+        area === 'local' &&
+        Object.keys(_changes).some(
+          (key) =>
+            key.startsWith('rl:v1:item:') ||
+            key.startsWith('rl:v1:deleted:') ||
+            key === 'rl:v1:settings',
+        )
+      )
+    )
+      return;
     if (this.refreshTimer) clearTimeout(this.refreshTimer);
     this.refreshTimer = window.setTimeout(() => {
       this.refreshTimer = null;
@@ -821,6 +883,18 @@ export class ReadingListAppElement extends LitElement {
           });
         });
     }, 100);
+  };
+  private onSidebarClick = () => {
+    const firefoxSidebar = firefoxSidebarAction();
+    if (firefoxSidebar) {
+      firefoxSidebar.toggle();
+      return;
+    }
+    if (this.windowId === undefined) return;
+    sidePanelApi()
+      ?.open({ windowId: this.windowId })
+      .then(() => window.close())
+      .catch(console.error);
   };
   private get visibleItems() {
     return sortList(this.items ?? [], this.settings).filter(
@@ -1218,6 +1292,18 @@ export class ReadingListAppElement extends LitElement {
             : ''}
         </div>
         <div class="footer-end">
+          ${!this.inSidebarPage && hasSidebar()
+            ? html`<button
+                class="footer-button sidebar-toggle"
+                aria-label=${i18n.getMessage('openSidebar')}
+                aria-hidden=${this.searchOpen || this.searchClosing}
+                tabindex=${this.searchOpen || this.searchClosing ? -1 : 0}
+                title=${i18n.getMessage('sidebar')}
+                @click=${this.onSidebarClick}
+              >
+                ${icon(PanelRight, 20)}
+              </button>`
+            : ''}
           <button
             class="footer-button settings-toggle"
             aria-label=${i18n.getMessage('openSettings')}
