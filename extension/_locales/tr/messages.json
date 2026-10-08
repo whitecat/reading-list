@@ -1,0 +1,167 @@
+{
+  "addLink": {
+    "message": "Bağlantıyı Okuma Listesi'ne ekle"
+  },
+  "addPage": {
+    "message": "Sayfayı Okuma Listesi'ne ekle"
+  },
+  "advancedOptions": {
+    "message": "Gelişmiş seçenekler"
+  },
+  "allButton": {
+    "message": "tümü"
+  },
+  "animation": {
+    "message": "Animasyonu etkinleştir"
+  },
+  "appDesc": {
+    "message": "Bu eklenti, daha sonra okumak istediğiniz sayfaların bağlantılarını bir listede saklar."
+  },
+  "appName": {
+    "message": "Okuma Listesi"
+  },
+  "backupRestore": {
+    "message": "Yedekleme ve Geri Yükleme"
+  },
+  "clearData": {
+    "message": "Okuma Listesi'ni Temizle"
+  },
+  "confirmMsg": {
+    "message": "Okuma listesindeki her şeyi silmek üzeresiniz. Emin misiniz?"
+  },
+  "context": {
+    "message": "Sağ tık menüsünde göster"
+  },
+  "copied": {
+    "message": "Kopyalandı"
+  },
+  "copyToClipboard": {
+    "message": "Panoya Kopyala"
+  },
+  "dateButton": {
+    "message": "tarih"
+  },
+  "defaultBehavior": {
+    "message": "Varsayılan Davranış"
+  },
+  "deleteItem": {
+    "message": "Sil"
+  },
+  "diagnosticsFailed": {
+    "message": "Depolama Tanılaması başarısız oldu: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "diagnosticsNote": {
+    "message": "Yalnızca sayılar ve boyutlar içerir; sayfa adresleri veya başlıklar içermez. Bu nedenle hata raporuyla göndermek güvenlidir."
+  },
+  "downloadLocalBackup": {
+    "message": "Yerel Yedeği İndir"
+  },
+  "editTitle": {
+    "message": "Başlığı düzenle"
+  },
+  "export": {
+    "message": "Dışa Aktar"
+  },
+  "import": {
+    "message": "İçe Aktar"
+  },
+  "importComplete": {
+    "message": "İçe aktarma tamamlandı! $COUNT$ öğe eklendi.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiagnostics": {
+    "message": "Tanılama: $DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "İçe aktarılamadı: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFirstError": {
+    "message": "İlk hata: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importInvalidFile": {
+    "message": "Geçersiz dosya biçimi."
+  },
+  "importPartial": {
+    "message": "$TOTAL$ öğeden $SUCCEEDED$ tanesi içe aktarıldı. $FAILED$ öğe başarısız oldu.",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    }
+  },
+  "loadFailed": {
+    "message": "Okuma listeniz yeni biçime dönüştürülemedi. Kaydettiğiniz sayfalar depolamada hâlâ güvende; yedek indirmek için Seçenekler'i (yukarıdaki dişli simgesi) açıp Gelişmiş seçenekler'e gidin."
+  },
+  "noLocalBackup": {
+    "message": "Henüz yerel yedek bulunamadı. Eklenti eski bir sürümden veri taşımadan önce otomatik olarak bir yedek kaydedilir."
+  },
+  "openNewTab": {
+    "message": "Bağlantıyı yeni sekmede aç"
+  },
+  "openSidebar": {
+    "message": "Kenar çubuğunu aç"
+  },
+  "options": {
+    "message": "Seçenekler"
+  },
+  "optionsTitle": {
+    "message": "Okuma Listesi Seçenekleri"
+  },
+  "pageActionOption": {
+    "message": "Adres çubuğunda göster"
+  },
+  "removePage": {
+    "message": "Sayfayı Okuma Listesi'nden kaldır"
+  },
+  "reviewRequest": {
+    "message": "Okuma Listesi'ni beğendiniz mi? Bize bir değerlendirme yazın!"
+  },
+  "search": {
+    "message": "Ara"
+  },
+  "sidebar": {
+    "message": "Kenar çubuğu"
+  },
+  "storageDiagnostics": {
+    "message": "Depolama Tanılaması"
+  },
+  "syncFailed": {
+    "message": "Bu değişiklik kaydedilemedi. Listeniz dolu olabilir; bazı sayfaları kaldırmayı deneyin."
+  },
+  "titleButton": {
+    "message": "başlık"
+  },
+  "unreadButton": {
+    "message": "okunmamış"
+  }
+}
