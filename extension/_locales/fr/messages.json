@@ -12,7 +12,7 @@
     "message": "tout"
   },
   "animation": {
-    "message": "Activer l'animation:"
+    "message": "Activer l'animation"
   },
   "appDesc": {
     "message": "Cette extension sauvegarde une liste de liens vers des pages a lire plus ulterieurement."
@@ -23,6 +23,9 @@
   "backup": {
     "message": "Sauvegarder:"
   },
+  "backupRestore": {
+    "message": "Sauvegarde et restauration"
+  },
   "clearData": {
     "message": "Effacer Liste de Lecture"
   },
@@ -30,7 +33,13 @@
     "message": "Vous êtes sur le point de supprimer tout le contenu de la liste de lecture. Êtes-vous sûr?"
   },
   "context": {
-    "message": "Afficher dans le menu contextuel:"
+    "message": "Afficher dans le menu contextuel"
+  },
+  "copied": {
+    "message": "Copié"
+  },
+  "copyToClipboard": {
+    "message": "Copier dans le presse-papiers"
   },
   "dark": {
     "message": "foncé"
@@ -38,8 +47,25 @@
   "dateButton": {
     "message": "date"
   },
+  "defaultBehavior": {
+    "message": "Comportement par défaut"
+  },
   "deleteAll": {
     "message": "Supprimer tout!"
+  },
+  "diagnosticsFailed": {
+    "message": "Le diagnostic du stockage a lui-même échoué : $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "diagnosticsNote": {
+    "message": "Ne contient que des nombres et des tailles, sans adresses de pages ni titres, et peut donc être joint sans risque à un rapport de bug."
+  },
+  "downloadLocalBackup": {
+    "message": "Télécharger la sauvegarde locale"
   },
   "export": {
     "message": "Exportation"
@@ -50,20 +76,78 @@
   "import": {
     "message": "Importer"
   },
+  "importComplete": {
+    "message": "Importation terminée ! $COUNT$ éléments ajoutés.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiagnostics": {
+    "message": "Diagnostic : $DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Échec de l'importation : $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFirstError": {
+    "message": "Première erreur : $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importInvalidFile": {
+    "message": "Format de fichier non valide."
+  },
+  "importPartial": {
+    "message": "$SUCCEEDED$ éléments sur $TOTAL$ importés. $FAILED$ ont échoué.",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    }
+  },
   "light": {
     "message": "lumière"
   },
+  "noLocalBackup": {
+    "message": "Aucune sauvegarde locale trouvée pour l'instant. Une sauvegarde est créée automatiquement avant que l'extension ne migre les données d'une version antérieure."
+  },
   "openNewTab": {
-    "message": "Ouvrir un lien dans un nouvel onglet:"
+    "message": "Ouvrir un lien dans un nouvel onglet"
   },
   "optionsTitle": {
     "message": "Options de la liste de lecture"
   },
   "pageActionOption": {
-    "message": "Afficher dans la barre d'adresse:"
+    "message": "Afficher dans la barre d'adresse"
+  },
+  "removePage": {
+    "message": "Retirer la page de la liste de lecture"
   },
   "search": {
     "message": "Recherche"
+  },
+  "storageDiagnostics": {
+    "message": "Diagnostic du stockage"
   },
   "theme": {
     "message": "Thème:"

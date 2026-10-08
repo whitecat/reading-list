@@ -5,6 +5,7 @@ export interface Settings {
   openNewTab?: boolean;
   animateItems?: boolean;
   addContextMenu?: boolean;
+  addPageAction?: boolean;
   sortOption?: SortOption;
   sortOrder?: SortOrder;
   viewAll?: boolean;
@@ -15,6 +16,7 @@ export const DEFAULT_SETTINGS: Required<Settings> = {
   openNewTab: false,
   animateItems: true,
   addContextMenu: true,
+  addPageAction: true,
   sortOption: '',
   sortOrder: '',
   viewAll: true,

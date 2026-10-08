@@ -13,6 +13,10 @@
     "default_popup": "popup.html",
     "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" }
   },
+  "page_action": {
+    "default_title": "__MSG_addPage__",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" }
+  },
   "sidebar_action": {
     "default_title": "__MSG_appName__",
     "default_panel": "sidebar.html",
@@ -43,7 +47,7 @@
     }
   },
   "minimum_chrome_version": "114",
-  "version": "3.5",
+  "version": "3.6",
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true

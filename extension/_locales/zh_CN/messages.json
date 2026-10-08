@@ -12,7 +12,7 @@
     "message": "所有"
   },
   "animation": {
-    "message": "支持动画:"
+    "message": "支持动画"
   },
   "appDesc": {
     "message": "这个扩展工具可以帮助收藏很多用于以后阅读的页面。"
@@ -23,6 +23,9 @@
   "backup": {
     "message": "备份:"
   },
+  "backupRestore": {
+    "message": "备份与恢复"
+  },
   "clearData": {
     "message": "清除阅读列表"
   },
@@ -30,7 +33,13 @@
     "message": "你准备删除阅读列表中的所有内容，请确认。"
   },
   "context": {
-    "message": "展示上下文菜单:"
+    "message": "展示上下文菜单"
+  },
+  "copied": {
+    "message": "已复制"
+  },
+  "copyToClipboard": {
+    "message": "复制到剪贴板"
   },
   "dark": {
     "message": "暗黑"
@@ -38,8 +47,25 @@
   "dateButton": {
     "message": "日期"
   },
+  "defaultBehavior": {
+    "message": "默认行为"
+  },
   "deleteAll": {
     "message": "删除所有!"
+  },
+  "diagnosticsFailed": {
+    "message": "存储诊断本身失败：$ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "diagnosticsNote": {
+    "message": "仅包含数量和大小，不含页面地址或标题，因此可以放心附在错误报告中。"
+  },
+  "downloadLocalBackup": {
+    "message": "下载本地备份"
   },
   "export": {
     "message": "导出"
@@ -50,20 +76,78 @@
   "import": {
     "message": "导入"
   },
+  "importComplete": {
+    "message": "导入完成！已添加 $COUNT$ 项。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiagnostics": {
+    "message": "诊断信息：$DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "导入失败：$ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFirstError": {
+    "message": "首个错误：$ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importInvalidFile": {
+    "message": "文件格式无效。"
+  },
+  "importPartial": {
+    "message": "已导入 $TOTAL$ 项中的 $SUCCEEDED$ 项，$FAILED$ 项失败。",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    }
+  },
   "light": {
     "message": "明亮主题"
   },
+  "noLocalBackup": {
+    "message": "尚未找到本地备份。扩展在迁移旧版本数据之前会自动保存一份。"
+  },
   "openNewTab": {
-    "message": "在新标签页中打开链接:"
+    "message": "在新标签页中打开链接"
   },
   "optionsTitle": {
     "message": "阅读列表选项"
   },
   "pageActionOption": {
-    "message": "在地址栏中显示:"
+    "message": "在地址栏中显示"
+  },
+  "removePage": {
+    "message": "从阅读列表中移除页面"
   },
   "search": {
     "message": "搜索"
+  },
+  "storageDiagnostics": {
+    "message": "存储诊断"
   },
   "theme": {
     "message": "主题:"

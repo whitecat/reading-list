@@ -12,7 +12,7 @@
     "message": "alles"
   },
   "animation": {
-    "message": "Animation anschalten:"
+    "message": "Animation anschalten"
   },
   "appDesc": {
     "message": "Diese Erweiterung speichert eine liste von webseiten, die später gelesen werden."
@@ -23,6 +23,9 @@
   "backup": {
     "message": "Datensicherung:"
   },
+  "backupRestore": {
+    "message": "Sicherung & Wiederherstellung"
+  },
   "clearData": {
     "message": "Leseliste löschen"
   },
@@ -30,7 +33,13 @@
     "message": "Sie sind dabei, alles in der Leseliste zu löschen. Bist du sicher?"
   },
   "context": {
-    "message": "Im Kontextmenü anzeigen:"
+    "message": "Im Kontextmenü anzeigen"
+  },
+  "copied": {
+    "message": "Kopiert"
+  },
+  "copyToClipboard": {
+    "message": "In die Zwischenablage kopieren"
   },
   "dark": {
     "message": "Dunkles"
@@ -38,8 +47,25 @@
   "dateButton": {
     "message": "Datum"
   },
+  "defaultBehavior": {
+    "message": "Standardverhalten"
+  },
   "deleteAll": {
     "message": "Alles löschen!"
+  },
+  "diagnosticsFailed": {
+    "message": "Die Speicherdiagnose selbst ist fehlgeschlagen: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "diagnosticsNote": {
+    "message": "Enthält nur Anzahlen und Größen, keine Seitenadressen oder Titel, und kann daher bedenkenlos in einem Fehlerbericht gesendet werden."
+  },
+  "downloadLocalBackup": {
+    "message": "Lokale Sicherung herunterladen"
   },
   "export": {
     "message": "Export"
@@ -50,20 +76,78 @@
   "import": {
     "message": "Import"
   },
+  "importComplete": {
+    "message": "Import abgeschlossen! $COUNT$ Einträge hinzugefügt.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiagnostics": {
+    "message": "Diagnose: $DIAGNOSTICS$",
+    "placeholders": {
+      "diagnostics": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFailed": {
+    "message": "Import fehlgeschlagen: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importFirstError": {
+    "message": "Erster Fehler: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "importInvalidFile": {
+    "message": "Ungültiges Dateiformat."
+  },
+  "importPartial": {
+    "message": "$SUCCEEDED$ von $TOTAL$ Einträgen importiert. $FAILED$ fehlgeschlagen.",
+    "placeholders": {
+      "succeeded": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "failed": {
+        "content": "$3"
+      }
+    }
+  },
   "light": {
     "message": "Licht"
   },
+  "noLocalBackup": {
+    "message": "Noch keine lokale Sicherung gefunden. Eine wird automatisch erstellt, bevor die Erweiterung Daten aus einer älteren Version migriert."
+  },
   "openNewTab": {
-    "message": "Link in neuem Tab öffnen:"
+    "message": "Link in neuem Tab öffnen"
   },
   "optionsTitle": {
     "message": "Leselistenoptionen"
   },
   "pageActionOption": {
-    "message": "Im Adressleiste anzeigen:"
+    "message": "In der Adressleiste anzeigen"
+  },
+  "removePage": {
+    "message": "Seite aus der Leseliste entfernen"
   },
   "search": {
     "message": "Suchbegriff"
+  },
+  "storageDiagnostics": {
+    "message": "Speicherdiagnose"
   },
   "theme": {
     "message": "Theme:"
