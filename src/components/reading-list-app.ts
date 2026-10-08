@@ -862,6 +862,7 @@ export class ReadingListAppElement extends LitElement {
   };
   private applyTheme() {
     this.dataset.theme = resolvedTheme(this.settings.theme);
+    document.documentElement.dataset.theme = this.dataset.theme;
   }
   private async load() {
     try {

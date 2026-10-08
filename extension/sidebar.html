@@ -22,7 +22,21 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background: transparent;
+        background: #fff;
+      }
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background: #171717;
+        }
+      }
+      html[data-theme='light'],
+      html[data-theme='light'] body {
+        background: #fff;
+      }
+      html[data-theme='dark'],
+      html[data-theme='dark'] body {
+        background: #171717;
       }
       body {
         font-family:
