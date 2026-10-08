@@ -20,7 +20,7 @@ test('imports v2 raw sync backups and reports malformed records', () => {
     items: [item], skipped: 1, source: 'v2',
     settings: {
       theme: 'dark', openNewTab: false, sortOption: 'manual',
-      sortOrder: 'down', viewAll: true,
+      sortOrder: 'down', viewAll: true, addContextMenu: true,
     },
   });
 });

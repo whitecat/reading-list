@@ -171,6 +171,13 @@ export class RL {
     return [...this.list];
   }
 
+  async isSaved(url: string): Promise<boolean> {
+    const itemKey = ITEM_PREFIX + url;
+    const deletedKey = DELETED_PREFIX + url;
+    const stored = await chrome.storage.local.get([itemKey, deletedKey]);
+    return itemKey in stored && typeof stored[deletedKey] !== 'number';
+  }
+
   async refresh(): Promise<ListItemData[]> {
     this.loading = null;
     return this.getListItems();

@@ -26,3 +26,13 @@ test('system theme survives settings normalization', () => {
   assert.equal(normalizeSettings({ theme: 'system' }).theme, 'system');
   assert.equal(toLegacySettings(normalizeSettings({ theme: 'system' })).theme, 'system');
 });
+
+test('the context menu setting defaults to on and can be turned off', () => {
+  assert.equal(normalizeSettings({}).addContextMenu, true);
+  assert.equal(normalizeSettings(undefined).addContextMenu, true);
+  assert.equal(normalizeSettings({ addContextMenu: false }).addContextMenu, false);
+  assert.equal(
+    toLegacySettings(normalizeSettings({ addContextMenu: false })).addContextMenu,
+    false,
+  );
+});

@@ -32,6 +32,10 @@
   "context": {
     "message": "Mostrar en el menú contextual:"
   },
+  "showInContextMenu": {
+    "message": "Mostrar en el menú contextual",
+    "description": "Settings switch for the right-click menu items."
+  },
   "dark": {
     "message": "Oscuro"
   },

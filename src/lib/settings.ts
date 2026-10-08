@@ -4,6 +4,7 @@ export interface ReadingListSettings {
   sortOption: 'manual' | 'date' | 'title';
   sortOrder: 'up' | 'down';
   viewAll: boolean;
+  addContextMenu: boolean;
 }
 
 export const DEFAULT_SETTINGS: ReadingListSettings = {
@@ -12,6 +13,7 @@ export const DEFAULT_SETTINGS: ReadingListSettings = {
   sortOption: 'manual',
   sortOrder: 'down',
   viewAll: true,
+  addContextMenu: true,
 };
 
 export function normalizeSettings(
@@ -38,6 +40,7 @@ export function normalizeSettings(
           ? 'up'
           : 'down',
     viewAll: raw.viewAll !== false,
+    addContextMenu: raw.addContextMenu !== false,
   };
 }
 

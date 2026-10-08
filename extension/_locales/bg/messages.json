@@ -32,6 +32,10 @@
   "context": {
     "message": "Показване в контекстното меню:"
   },
+  "showInContextMenu": {
+    "message": "Показване в контекстното меню",
+    "description": "Settings switch for the right-click menu items."
+  },
   "dark": {
     "message": "Тъмна"
   },
