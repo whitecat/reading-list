@@ -1,9 +1,9 @@
 {
   "addLink": {
-    "message": "Engadir unha ligazón a Reading List"
+    "message": "Engadir unha ligazón á Lista de lectura"
   },
   "addPage": {
-    "message": "Engadir unha páxina a Reading List"
+    "message": "Engadir unha páxina á Lista de lectura"
   },
   "advancedOptions": {
     "message": "Axustes avanzados"
@@ -18,16 +18,16 @@
     "message": "Esta extensión garda unha lista das ligazóns a páxinas para ler máis tarde."
   },
   "appName": {
-    "message": "Reading List"
+    "message": "Lista de lectura"
   },
   "backupRestore": {
     "message": "Copia de seguranza e restauración"
   },
   "clearData": {
-    "message": "Limpar Reading List"
+    "message": "Limpar Lista de lectura"
   },
   "confirmMsg": {
-    "message": "Vai borrar todo o contido la lista de lectura. Está seguro?"
+    "message": "Vai borrar todo o contido da lista de lectura. Está seguro?"
   },
   "context": {
     "message": "Mostrar no menú contextual"
@@ -135,13 +135,13 @@
     "message": "Opcións"
   },
   "optionsTitle": {
-    "message": "Axustes de Reading List"
+    "message": "Axustes da Lista de lectura"
   },
   "pageActionOption": {
     "message": "Amosar na barra de enderezos"
   },
   "removePage": {
-    "message": "Eliminar a páxina de Reading List"
+    "message": "Eliminar a páxina da Lista de lectura"
   },
   "reviewRequest": {
     "message": "Gústalle a lista de lectura? Déixenos unha valoración!"
