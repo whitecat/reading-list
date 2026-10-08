@@ -578,7 +578,7 @@ test('options page uses switches and hides manual direction', async () => {
   await new Promise((resolve) => setTimeout(resolve, 15));
   await options.updateComplete;
   const optionsRoot = options.shadowRoot;
-  assert.equal(optionsRoot.querySelectorAll('input[role="switch"]').length, 2);
+  assert.equal(optionsRoot.querySelectorAll('input[role="switch"]').length, 3);
   const feedback = optionsRoot.querySelector('.feedback-link');
   assert.ok(feedback.classList.contains('text-button'));
   assert.equal(feedback.textContent.trim(), 'Open form');

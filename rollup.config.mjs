@@ -13,6 +13,16 @@ export default {
     html({
       input: ['extension/popup.html', 'extension/options.html'],
     }),
+    {
+      name: 'background-worker',
+      buildStart() {
+        this.emitFile({
+          type: 'chunk',
+          id: 'extension/scripts/background.js',
+          fileName: 'background.js',
+        });
+      },
+    },
     // Resolve bare module specifiers to relative paths
     resolve(),
     commonjs(),

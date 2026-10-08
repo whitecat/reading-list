@@ -223,6 +223,19 @@ export class ReadingListOptionsElement extends LitElement {
                       )}
                 /></label>
                 <label class="row"
+                  ><span>${i18n.getMessage('showInContextMenu')}</span
+                  ><input
+                    type="checkbox"
+                    role="switch"
+                    class="switch"
+                    .checked=${this.settings.addContextMenu}
+                    @change=${(event: Event) =>
+                      this.updateSetting(
+                        'addContextMenu',
+                        (event.target as HTMLInputElement).checked,
+                      )}
+                /></label>
+                <label class="row"
                   ><span>${i18n.getMessage('showViewedPages')}</span
                   ><input
                     type="checkbox"

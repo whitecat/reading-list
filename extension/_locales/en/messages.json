@@ -43,6 +43,10 @@
     "message": "Show in context menu:",
     "description": "The label for the context option."
   },
+  "showInContextMenu": {
+    "message": "Show in context menu",
+    "description": "Settings switch for the right-click menu items."
+  },
   "dark": {
     "message": "Dark",
     "description": "The name for the dark theme."

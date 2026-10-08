@@ -32,6 +32,10 @@
   "context": {
     "message": "展示上下文菜单:"
   },
+  "showInContextMenu": {
+    "message": "展示上下文菜单",
+    "description": "Settings switch for the right-click menu items."
+  },
   "dark": {
     "message": "深色"
   },
