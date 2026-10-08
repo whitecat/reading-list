@@ -20,9 +20,6 @@
   "appName": {
     "message": "阅读列表"
   },
-  "backup": {
-    "message": "备份:"
-  },
   "backupRestore": {
     "message": "备份与恢复"
   },
@@ -41,17 +38,14 @@
   "copyToClipboard": {
     "message": "复制到剪贴板"
   },
-  "dark": {
-    "message": "暗黑"
-  },
   "dateButton": {
     "message": "日期"
   },
   "defaultBehavior": {
     "message": "默认行为"
   },
-  "deleteAll": {
-    "message": "删除所有!"
+  "deleteItem": {
+    "message": "删除"
   },
   "diagnosticsFailed": {
     "message": "存储诊断本身失败：$ERROR$",
@@ -67,11 +61,11 @@
   "downloadLocalBackup": {
     "message": "下载本地备份"
   },
+  "editTitle": {
+    "message": "编辑标题"
+  },
   "export": {
     "message": "导出"
-  },
-  "goBack": {
-    "message": "退回"
   },
   "import": {
     "message": "导入"
@@ -125,14 +119,20 @@
       }
     }
   },
-  "light": {
-    "message": "明亮主题"
+  "loadFailed": {
+    "message": "将阅读列表转换为新格式失败。你保存的页面仍然安全：打开选项（上方的齿轮图标）→ 高级选项，即可下载备份。"
   },
   "noLocalBackup": {
     "message": "尚未找到本地备份。扩展在迁移旧版本数据之前会自动保存一份。"
   },
   "openNewTab": {
     "message": "在新标签页中打开链接"
+  },
+  "openSidebar": {
+    "message": "打开侧边栏"
+  },
+  "options": {
+    "message": "选项"
   },
   "optionsTitle": {
     "message": "阅读列表选项"
@@ -143,14 +143,20 @@
   "removePage": {
     "message": "从阅读列表中移除页面"
   },
+  "reviewRequest": {
+    "message": "喜欢阅读列表吗？请给我们评分吧！"
+  },
   "search": {
     "message": "搜索"
+  },
+  "sidebar": {
+    "message": "侧边栏"
   },
   "storageDiagnostics": {
     "message": "存储诊断"
   },
-  "theme": {
-    "message": "主题:"
+  "syncFailed": {
+    "message": "无法保存此更改。你的列表可能已满，请尝试删除一些页面。"
   },
   "titleButton": {
     "message": "标题"

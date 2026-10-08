@@ -20,9 +20,6 @@
   "appName": {
     "message": "Liste de Lecture"
   },
-  "backup": {
-    "message": "Sauvegarder:"
-  },
   "backupRestore": {
     "message": "Sauvegarde et restauration"
   },
@@ -41,17 +38,14 @@
   "copyToClipboard": {
     "message": "Copier dans le presse-papiers"
   },
-  "dark": {
-    "message": "foncé"
-  },
   "dateButton": {
     "message": "date"
   },
   "defaultBehavior": {
     "message": "Comportement par défaut"
   },
-  "deleteAll": {
-    "message": "Supprimer tout!"
+  "deleteItem": {
+    "message": "Supprimer"
   },
   "diagnosticsFailed": {
     "message": "Le diagnostic du stockage a lui-même échoué : $ERROR$",
@@ -67,11 +61,11 @@
   "downloadLocalBackup": {
     "message": "Télécharger la sauvegarde locale"
   },
+  "editTitle": {
+    "message": "Modifier le titre"
+  },
   "export": {
     "message": "Exporter"
-  },
-  "goBack": {
-    "message": "Retourner"
   },
   "import": {
     "message": "Importer"
@@ -125,14 +119,20 @@
       }
     }
   },
-  "light": {
-    "message": "lumière"
+  "loadFailed": {
+    "message": "La conversion de votre liste de lecture au nouveau format a échoué. Vos pages enregistrées sont toujours en sécurité : ouvrez les Options (l'icône d'engrenage ci-dessus) → Options avancées pour télécharger une sauvegarde."
   },
   "noLocalBackup": {
     "message": "Aucune sauvegarde locale trouvée pour l'instant. Une sauvegarde est créée automatiquement avant que l'extension ne migre les données d'une version antérieure."
   },
   "openNewTab": {
     "message": "Ouvrir un lien dans un nouvel onglet"
+  },
+  "openSidebar": {
+    "message": "Ouvrir la barre latérale"
+  },
+  "options": {
+    "message": "Options"
   },
   "optionsTitle": {
     "message": "Options de la liste de lecture"
@@ -143,14 +143,20 @@
   "removePage": {
     "message": "Retirer la page de la liste de lecture"
   },
+  "reviewRequest": {
+    "message": "Vous aimez la liste de lecture ? Laissez-nous un avis !"
+  },
   "search": {
     "message": "Recherche"
+  },
+  "sidebar": {
+    "message": "Barre latérale"
   },
   "storageDiagnostics": {
     "message": "Diagnostic du stockage"
   },
-  "theme": {
-    "message": "Thème:"
+  "syncFailed": {
+    "message": "Impossible d'enregistrer cette modification. Votre liste est peut-être pleine : essayez de supprimer quelques pages."
   },
   "titleButton": {
     "message": "titre"

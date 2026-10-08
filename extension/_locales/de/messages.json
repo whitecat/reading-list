@@ -1,6 +1,6 @@
 {
   "addLink": {
-    "message": "Seite zur Leseliste hinzufügen"
+    "message": "Link zur Leseliste hinzufügen"
   },
   "addPage": {
     "message": "Seite zur Leseliste hinzufügen"
@@ -20,9 +20,6 @@
   "appName": {
     "message": "Leseliste"
   },
-  "backup": {
-    "message": "Datensicherung:"
-  },
   "backupRestore": {
     "message": "Sicherung & Wiederherstellung"
   },
@@ -30,7 +27,7 @@
     "message": "Leseliste löschen"
   },
   "confirmMsg": {
-    "message": "Sie sind dabei, alles in der Leseliste zu löschen. Bist du sicher?"
+    "message": "Sie sind dabei, alles in der Leseliste zu löschen. Sind Sie sicher?"
   },
   "context": {
     "message": "Im Kontextmenü anzeigen"
@@ -41,17 +38,14 @@
   "copyToClipboard": {
     "message": "In die Zwischenablage kopieren"
   },
-  "dark": {
-    "message": "Dunkles"
-  },
   "dateButton": {
     "message": "Datum"
   },
   "defaultBehavior": {
     "message": "Standardverhalten"
   },
-  "deleteAll": {
-    "message": "Alles löschen!"
+  "deleteItem": {
+    "message": "Löschen"
   },
   "diagnosticsFailed": {
     "message": "Die Speicherdiagnose selbst ist fehlgeschlagen: $ERROR$",
@@ -67,11 +61,11 @@
   "downloadLocalBackup": {
     "message": "Lokale Sicherung herunterladen"
   },
+  "editTitle": {
+    "message": "Titel bearbeiten"
+  },
   "export": {
     "message": "Export"
-  },
-  "goBack": {
-    "message": "Zurückgehen"
   },
   "import": {
     "message": "Import"
@@ -125,14 +119,20 @@
       }
     }
   },
-  "light": {
-    "message": "Licht"
+  "loadFailed": {
+    "message": "Die Umstellung Ihrer Leseliste auf das neue Format ist fehlgeschlagen. Ihre gespeicherten Seiten sind weiterhin sicher. Öffnen Sie die Optionen (Zahnrad oben) → Erweiterte Optionen, um eine Sicherung herunterzuladen."
   },
   "noLocalBackup": {
     "message": "Noch keine lokale Sicherung gefunden. Eine wird automatisch erstellt, bevor die Erweiterung Daten aus einer älteren Version migriert."
   },
   "openNewTab": {
     "message": "Link in neuem Tab öffnen"
+  },
+  "openSidebar": {
+    "message": "Seitenleiste öffnen"
+  },
+  "options": {
+    "message": "Optionen"
   },
   "optionsTitle": {
     "message": "Leselistenoptionen"
@@ -143,14 +143,20 @@
   "removePage": {
     "message": "Seite aus der Leseliste entfernen"
   },
+  "reviewRequest": {
+    "message": "Gefällt Ihnen die Leseliste? Geben Sie uns eine Bewertung!"
+  },
   "search": {
     "message": "Suchbegriff"
+  },
+  "sidebar": {
+    "message": "Seitenleiste"
   },
   "storageDiagnostics": {
     "message": "Speicherdiagnose"
   },
-  "theme": {
-    "message": "Theme:"
+  "syncFailed": {
+    "message": "Die Änderung konnte nicht gespeichert werden. Ihre Liste ist möglicherweise voll. Entfernen Sie einige Seiten."
   },
   "titleButton": {
     "message": "Titel"
