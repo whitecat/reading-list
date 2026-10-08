@@ -1,5 +1,6 @@
 import { loadItems, PREFERRED_STORE } from './storage/load.js';
 import {
+  isSavableUrl,
   ItemStore,
   ListItemData,
   syncBytes,
@@ -17,8 +18,7 @@ export interface ImportResult {
 }
 
 function assertHttpUrl(url: string): void {
-  if (!/^https?:\/\//i.test(url))
-    throw new Error(`Unsupported URL scheme: ${url}`);
+  if (!isSavableUrl(url)) throw new Error(`Unsupported URL scheme: ${url}`);
 }
 
 function withoutDataFavicon(item: ListItemData): ListItemData {

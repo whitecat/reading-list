@@ -1,4 +1,5 @@
 import {
+  isSavableUrl,
   ItemStore,
   ListItemData,
   StorageFullError,
@@ -8,7 +9,7 @@ import {
   syncQuotaBytesPerKey,
 } from './store.js';
 
-export const isFlatKey = (key: string): boolean => /^https?:\/\//i.test(key);
+export const isFlatKey = (key: string): boolean => isSavableUrl(key);
 
 function layout(items: ListItemData[]): StoreLayout {
   const data: SyncData = {};
