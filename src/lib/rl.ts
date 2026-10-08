@@ -6,6 +6,7 @@ import {
   StoredItem,
 } from './storage-model.js';
 import { BackupFile } from './backup.js';
+import { convertBuckets } from './bucket-conversion.js';
 import {
   DEFAULT_SETTINGS,
   normalizeSettings,
@@ -65,6 +66,7 @@ export class RL {
   private archivedConflicts = 0;
 
   private async load() {
+    await convertBuckets();
     const local = await chrome.storage.local.get(null);
     this.archivedConflicts = Object.keys(local)
       .filter((key) => key.startsWith(CONFLICT_PREFIX)).length;
