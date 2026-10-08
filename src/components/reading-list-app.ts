@@ -49,12 +49,29 @@ function firefoxSidebarAction() {
   ).browser?.sidebarAction;
 }
 
+const SIDE_PANEL_OPEN = 'side-panel-open';
+const CLOSE_SIDE_PANEL = 'close-side-panel';
+
 function sidePanelApi() {
   return (
     chrome as unknown as {
-      sidePanel?: { open: (options: { windowId: number }) => Promise<void> };
+      sidePanel?: {
+        open: (options: { windowId: number }) => Promise<void>;
+        close?: (options: { windowId: number }) => Promise<void>;
+      };
     }
   )?.sidePanel;
+}
+
+async function sidePanelOpenIn(windowId: number): Promise<boolean> {
+  try {
+    return (
+      (await chrome.runtime.sendMessage({ type: SIDE_PANEL_OPEN, windowId })) ===
+      true
+    );
+  } catch {
+    return false;
+  }
 }
 
 function hasSidebar(): boolean {
@@ -731,6 +748,7 @@ export class ReadingListAppElement extends LitElement {
   private reordering = false;
   private themeMedia = window.matchMedia('(prefers-color-scheme: dark)');
   private windowId?: number;
+  private sidePanelOpen = false;
   private get inSidebarPage() {
     return document.body.classList.contains('sidebar-page');
   }
@@ -743,8 +761,16 @@ export class ReadingListAppElement extends LitElement {
     if (typeof sidePanelApi()?.open === 'function') {
       chrome.windows
         .getCurrent()
-        .then((win) => (this.windowId = win.id))
+        .then(async (win) => {
+          this.windowId = win.id;
+          if (win.id !== undefined && !this.inSidebarPage) {
+            this.sidePanelOpen = await sidePanelOpenIn(win.id);
+          }
+        })
         .catch(console.error);
+      if (this.inSidebarPage) {
+        chrome.runtime.onMessage.addListener(this.onRuntimeMessage);
+      }
     }
     chrome.storage.onChanged.addListener(this.onStorageChanged);
     this.addEventListener('keydown', this.onKeydown);
@@ -755,6 +781,7 @@ export class ReadingListAppElement extends LitElement {
   }
   override disconnectedCallback() {
     chrome.storage.onChanged.removeListener(this.onStorageChanged);
+    chrome.runtime.onMessage?.removeListener(this.onRuntimeMessage);
     this.removeEventListener('keydown', this.onKeydown);
     document.removeEventListener('keydown', this.onSaveShortcut);
     document.removeEventListener('pointerdown', this.onOutsidePointer);
@@ -888,10 +915,25 @@ export class ReadingListAppElement extends LitElement {
       return;
     }
     if (this.windowId === undefined) return;
-    sidePanelApi()
-      ?.open({ windowId: this.windowId })
-      .then(() => window.close())
-      .catch(console.error);
+    const windowId = this.windowId;
+    const panel = sidePanelApi();
+    const toggled = !this.sidePanelOpen
+      ? panel?.open({ windowId })
+      : panel?.close
+        ? panel.close({ windowId })
+        : chrome.runtime.sendMessage({ type: CLOSE_SIDE_PANEL, windowId });
+    toggled?.then(() => window.close()).catch(console.error);
+  };
+  private onRuntimeMessage = (
+    message: unknown,
+    _sender: chrome.runtime.MessageSender,
+    sendResponse: (response: boolean) => void,
+  ) => {
+    const request = message as { type?: string; windowId?: number };
+    if (request?.windowId === undefined || request.windowId !== this.windowId)
+      return;
+    if (request.type === SIDE_PANEL_OPEN) sendResponse(true);
+    if (request.type === CLOSE_SIDE_PANEL) window.close();
   };
   private get visibleItems() {
     return sortList(this.items ?? [], this.settings).filter(

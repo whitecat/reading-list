@@ -50,10 +50,23 @@ const area = (records) => ({
   },
 });
 let storageListener;
+let runtimeListener;
 let getCurrentCalls = 0;
+let openPanels = [];
 const opened = [];
+const sent = [];
 globalThis.chrome = {
   runtime: {
+    onMessage: {
+      addListener: (listener) => (runtimeListener = listener),
+      removeListener() {},
+    },
+    async sendMessage(message) {
+      sent.push(message);
+      return message.type === 'side-panel-open' && openPanels.length > 0
+        ? true
+        : undefined;
+    },
     async openOptionsPage() {},
     getManifest() {
       return { version: '3.1.0' };
@@ -123,6 +136,59 @@ test('Chrome side panel opens synchronously with the cached window id', async ()
   const before = opened.length;
   toggle.click();
   assert.deepEqual(opened.slice(before), [{ windowId: 7 }]);
+  delete chrome.sidePanel;
+});
+
+test('Chrome side panel closes when it is already open', async () => {
+  const closed = [];
+  chrome.sidePanel = {
+    open: (options) => {
+      opened.push(options);
+      return Promise.resolve();
+    },
+    close: (options) => {
+      closed.push(options);
+      return Promise.resolve();
+    },
+  };
+  openPanels = [{ contextType: 'SIDE_PANEL' }];
+  document.body.className = 'popup-page';
+  const app = await mount();
+  const before = opened.length;
+  button(app).click();
+  assert.deepEqual(closed, [{ windowId: 7 }]);
+  assert.equal(opened.length, before);
+  openPanels = [];
+  delete chrome.sidePanel;
+});
+
+test('without sidePanel.close, the open panel is asked to close itself', async () => {
+  chrome.sidePanel = { open: () => Promise.resolve() };
+  openPanels = [{ contextType: 'SIDE_PANEL' }];
+  document.body.className = 'popup-page';
+  const popup = await mount();
+  button(popup).click();
+  assert.deepEqual(sent.at(-1), { type: 'close-side-panel', windowId: 7 });
+  openPanels = [];
+
+  document.body.className = 'sidebar-page';
+  await mount();
+  let closes = 0;
+  const close = window.close;
+  window.close = () => closes++;
+  const answers = [];
+  runtimeListener({ type: 'side-panel-open', windowId: 8 }, {}, (r) =>
+    answers.push(r),
+  );
+  runtimeListener({ type: 'side-panel-open', windowId: 7 }, {}, (r) =>
+    answers.push(r),
+  );
+  assert.deepEqual(answers, [true]);
+  runtimeListener({ type: 'close-side-panel', windowId: 8 }, {}, () => {});
+  assert.equal(closes, 0);
+  runtimeListener({ type: 'close-side-panel', windowId: 7 }, {}, () => {});
+  assert.equal(closes, 1);
+  window.close = close;
   delete chrome.sidePanel;
 });
 
